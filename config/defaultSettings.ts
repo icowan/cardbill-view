@@ -57,4 +57,5 @@ export default {
   title: 'Card Bill',
   pwa: false,
   iconfontUrl: '',
+
 } as DefaultSettings;
