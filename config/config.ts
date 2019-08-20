@@ -96,14 +96,37 @@ export default {
         {
           path: '/',
           name: 'dashboard',
-          icon: 'smile',
+          icon: 'pie-chart',
           component: './Welcome',
+          authority: ['admin'],
         },
         {
           path: '/record',
-          name: "record",
+          name: 'record',
+          icon: 'pay-circle',
+          component: './record/list',
+          authority: ['admin'],
+        },
+        {
+          path: '/credit-card',
+          name: 'credit-card',
+          icon: 'credit-card',
+          component: './Welcome',
+          authority: ['admin'],
+        },
+        {
+          path: '/business',
+          name: 'business',
+          icon: 'ordered-list',
+          component: './Welcome',
+          authority: ['admin'],
+        },
+        {
+          path: '/merchant',
+          name: 'merchant',
           icon: 'smile',
-          component: "./record/list"
+          component: './Welcome',
+          authority: ['admin'],
         },
         {
           component: './404',
@@ -134,7 +157,7 @@ export default {
         resourcePath: string;
       },
       _: string,
-      localName: string
+      localName: string,
     ) => {
       if (
         context.resourcePath.includes('node_modules') ||

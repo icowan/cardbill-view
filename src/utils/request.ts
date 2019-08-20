@@ -36,6 +36,13 @@ const errorHandler = (error: { response: Response }): Response => {
       message: `请求错误 ${status}: ${url}`,
       description: errorText,
     });
+    if (status == 401) {
+      // localStorage.setItem('authorization', "")
+      // localStorage.setItem('username', "")
+      if (window.location.pathname != '/user/login') {
+        window.location.href = '/user/login';
+      }
+    }
   } else if (!response) {
     notification.error({
       description: '您的网络发生异常，无法连接服务器',
@@ -50,11 +57,12 @@ const errorHandler = (error: { response: Response }): Response => {
  */
 const request = extend({
   errorHandler, // 默认错误处理
-  prefix: window.location.hostname == "localhost" ? "http://localhost:8080" : "",
+  prefix: window.location.hostname == 'localhost' ? 'http://localhost:8080' : '',
   credentials: 'include', // 默认请求是否带上cookie
   headers: {
-    mode: "cors"
-  }
+    mode: 'cors',
+    Authorization: localStorage.getItem('authorization'),
+  },
 });
 
 export default request;

@@ -4,11 +4,9 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 export default (): React.ReactNode => (
   <PageHeaderWrapper>
     <p style={{ textAlign: 'center' }}>
-      Want to add more pages? Please refer to{' '}
-      <a href="https://pro.ant.design/docs/block-cn" target="_blank" rel="noopener noreferrer">
-        use block
-      </a>
-      。
+      作者还是思考中...
+      <br />
+      或许...等他有空了就完成了
     </p>
   </PageHeaderWrapper>
 );
