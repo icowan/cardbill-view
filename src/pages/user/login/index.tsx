@@ -67,7 +67,7 @@ class Login extends Component<LoginProps, LoginState> {
       // Cookie.set("authorization", token.replace("Bearer+", "Bearer "));
       setAuthority('admin');
       // this.props.dispatch(routerRedux.push('/record'))
-      window.location.href = '/record';
+      window.location.href = '/#/record';
     }
   }
   getParameterByName = (name: string) => {

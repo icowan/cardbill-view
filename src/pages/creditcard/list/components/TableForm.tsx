@@ -238,7 +238,7 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
         title: '时间',
         dataIndex: 'created_at',
         key: 'created_at',
-        width: 80,
+        width: 160,
         render: (text: string, record: TableFormDateType) => {
           return moment(new Date(text)).format('YYYY/MM/DD HH:mm');
         },

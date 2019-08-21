@@ -40,7 +40,7 @@ const errorHandler = (error: { response: Response }): Response => {
       // localStorage.setItem('authorization', "")
       // localStorage.setItem('username', "")
       if (window.location.pathname != '/user/login') {
-        window.location.href = '/user/login';
+        window.location.href = '/#/user/login';
       }
     }
   } else if (!response) {
@@ -60,8 +60,9 @@ const request = extend({
   prefix: window.location.hostname == 'localhost' ? 'http://localhost:8080' : '',
   credentials: 'include', // 默认请求是否带上cookie
   headers: {
-    mode: 'cors',
-    Authorization: localStorage.getItem('authorization'),
+    "mode": 'cors',
+    "Authorization": localStorage.getItem('authorization'),
+    "Content-Type": "application/json",
   },
 });
 

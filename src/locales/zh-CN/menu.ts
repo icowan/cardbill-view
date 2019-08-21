@@ -48,7 +48,7 @@ export default {
   'menu.editor.mind': '脑图编辑器',
   'menu.editor.koni': '拓扑编辑器',
   'menu.record': '刷卡记录',
-  'menu.credit-card': '信用卡列表',
+  'menu.credit-card': '信用卡',
   'menu.business': '商户类型',
   'menu.merchant': '商户列表',
 };

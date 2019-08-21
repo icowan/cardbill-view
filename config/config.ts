@@ -76,6 +76,8 @@ export default {
     defaultGitUrl: 'https://github.com/ant-design/pro-blocks',
   },
   hash: true,
+  history: "hash",
+  // outputPath: "/Users/dudulu/go/src/github.com/nsini/cardbill/dist",
   targets: {
     ie: 11,
   },
