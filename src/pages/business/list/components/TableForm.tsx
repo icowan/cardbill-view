@@ -1,33 +1,19 @@
-import { Button, Divider, Input, InputNumber, Icon, Table, message, Select } from 'antd';
+import { Button, Input, InputNumber, Table, message } from 'antd';
 import React, { Fragment, PureComponent } from 'react';
 
 import isEqual from 'lodash.isequal';
-const { Option } = Select;
 
 interface TableFormDateType {
   id: number;
-  card_name: string;
-  bank_id: number;
-  fixed_amount: number;
-  max_amount: number;
-  billing_day: number;
-  cardholder: number;
-  state: number;
-  bank: BankType;
+  business_name: string;
+  code: number;
   editable: boolean;
   isNew: boolean;
-}
-
-interface BankType {
-  id: number;
-  bank_name: string;
 }
 
 interface TableFormProps {
   loading?: boolean;
   value?: TableFormDateType[];
-  banks?: BankType[];
-  creditCards?: TableFormDateType[];
   onLoadBanks?: () => void;
   loadList?: () => void;
   onLoadCreditCards?: (bankId?: number) => void;
@@ -89,7 +75,6 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
     const { data = [] } = this.state;
     const newData = data.map(item => ({ ...item }));
     const { onLoadBanks } = this.props;
-    onLoadBanks();
     newData.push({
       id: this.index,
       isNew: true,
@@ -121,14 +106,8 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
         return;
       }
       const target = this.getRowByKey(key) || {};
-      if (
-        !target.bank_id ||
-        !target.card_name ||
-        !target.billing_day ||
-        !target.cardholder ||
-        !target.fixed_amount ||
-        !target.max_amount
-      ) {
+      console.log(target);
+      if (!target.business_name || !target.code) {
         message.error('请填写完整成员信息。');
         (e.target as HTMLInputElement).focus();
         this.setState({
@@ -162,53 +141,17 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
 
   render() {
     const { loading, data } = this.state;
-    const { banks } = this.props;
-    let bankOptions = [];
-    for (let i in banks) {
-      bankOptions.push(<Option key={banks[i].id}>{banks[i].bank_name}</Option>);
-    }
-
     let columns = [
       {
-        title: '银行',
-        dataIndex: 'bank',
-        key: 'bank',
-        width: 180,
-        render: (text: BankType, record: TableFormDateType) => {
-          if (record.editable) {
-            return (
-              <Select
-                style={{ width: '100%' }}
-                placeholder="请选择银行"
-                onChange={val => this.onChangeData(val, 'bank_id', record.id)}
-                dropdownRender={menu => (
-                  <div>
-                    {menu}
-                    {/* <Divider style={{ margin: '4px 0' }} />
-                    <div style={{ padding: '8px', cursor: 'pointer' }}>
-                      <Icon type="plus" /> 添加银行
-                    </div> */}
-                  </div>
-                )}
-              >
-                {bankOptions}
-              </Select>
-            );
-          }
-          return text.bank_name;
-        },
-      },
-      {
-        title: '信用卡',
-        dataIndex: 'card_name',
-        key: 'card_name',
-        width: 160,
+        title: '名称',
+        dataIndex: 'business_name',
+        key: 'business_name',
         render: (text: string, record: TableFormDateType) => {
           if (record.editable) {
             return (
               <Input
-                onChange={e => this.handleFieldChange(e, 'card_name', record.id)}
-                placeholder="请输入信用卡"
+                onChange={e => this.handleFieldChange(e, 'business_name', record.id)}
+                placeholder="请输入名称"
               />
             );
           }
@@ -216,99 +159,21 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
         },
       },
       {
-        title: '固定额度',
-        dataIndex: 'fixed_amount',
-        key: 'fixed_amount',
-        width: 180,
-        render: (text: number, record: TableFormDateType) => {
+        title: 'MCC',
+        dataIndex: 'code',
+        key: 'code',
+        render: (text: string, record: TableFormDateType) => {
           if (record.editable) {
             return (
               <InputNumber
-                min={1}
-                max={999999}
-                placeholder="固额"
-                onChange={val => this.onChangeData(val, 'fixed_amount', record.id)}
+                min={1000}
+                max={9999}
+                onChange={val => this.onChangeData(val, 'code', record.id)}
+                placeholder="请输入MCC"
               />
             );
           }
           return text;
-        },
-      },
-      {
-        title: '临时额度',
-        dataIndex: 'max_amount',
-        key: 'max_amount',
-        width: 180,
-        render: (text: number, record: TableFormDateType) => {
-          if (record.editable) {
-            return (
-              <InputNumber
-                min={1}
-                max={999999}
-                placeholder="临额"
-                onChange={val => this.onChangeData(val, 'max_amount', record.id)}
-              />
-            );
-          }
-          return text;
-        },
-      },
-      {
-        title: '账单日',
-        dataIndex: 'billing_day',
-        key: 'billing_day',
-        render: (text: number, record: any) => {
-          if (record.editable) {
-            return (
-              <InputNumber
-                min={1}
-                max={31}
-                placeholder="账单日"
-                onChange={val => this.onChangeData(val, 'billing_day', record.id)}
-              />
-            );
-          }
-          return '每月 ' + text + ' 日';
-        },
-      },
-      {
-        title: '还款日',
-        dataIndex: 'cardholder',
-        key: 'cardholder',
-        width: 120,
-        render: (text: number, record: TableFormDateType) => {
-          if (record.editable) {
-            return (
-              <InputNumber
-                min={1}
-                max={31}
-                placeholder="还款日"
-                onChange={val => this.onChangeData(val, 'cardholder', record.id)}
-              />
-            );
-          }
-          return '每月 ' + text + ' 日';
-        },
-      },
-      {
-        title: '状态',
-        dataIndex: 'state',
-        key: 'state',
-        width: 160,
-        render: (text: number, record: TableFormDateType) => {
-          if (record.editable) {
-            return (
-              <Select
-                style={{ width: '100%' }}
-                placeholder="请选择状态"
-                onChange={val => this.onChangeData(val, 'state', record.id)}
-              >
-                <Option key={0}>正常</Option>
-                <Option key={1}>禁用</Option>
-              </Select>
-            );
-          }
-          return text == 0 ? '正常' : '其他';
         },
       },
       {
@@ -340,7 +205,7 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
           onClick={this.newRecord}
           icon="plus"
         >
-          新增信用卡
+          新增商户类型
         </Button>
         <Table<TableFormDateType>
           loading={loading}

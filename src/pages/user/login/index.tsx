@@ -10,7 +10,7 @@ import { connect } from 'dva';
 import { StateType } from './model';
 import LoginComponents from './components/Login';
 import styles from './style.less';
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
+const { Tab } = LoginComponents;
 import { setAuthority } from '../../../utils/authority';
 
 interface LoginProps {

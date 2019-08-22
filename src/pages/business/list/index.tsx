@@ -12,19 +12,19 @@ import TableForm from './components/TableForm';
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   submitting: boolean;
-  record: StateType;
+  business: StateType;
 }
 
 @connect(
   ({
-    record,
+    business,
     loading,
   }: {
-    record: StateType;
+    business: StateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
-    record,
-    submitting: loading.effects['record/creditCards'],
+    business,
+    submitting: loading.effects['business/list'],
   }),
 )
 class List extends Component<ListProps> {
@@ -36,7 +36,7 @@ class List extends Component<ListProps> {
     window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
     const { dispatch } = this.props;
     dispatch({
-      type: 'record/creditCards',
+      type: 'business/list',
     });
   }
 
@@ -57,44 +57,26 @@ class List extends Component<ListProps> {
     });
   };
 
-  renderMessage = (content: string) => (
-    <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
-  );
-
-  onLoadBanks = () => {
+  onAddBusiness = (record: any) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'record/banks',
-    });
-  };
-
-  onAddCard = (record: any) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'record/addCreditCard',
+      type: 'business/addBusiness',
       payload: record,
     });
   };
 
   render() {
     const {
-      record: { banks, creditCards },
+      business: { list },
       form: { getFieldDecorator },
     } = this.props;
     return (
       <div>
-        <PageHeaderWrapper content="随时随地记录您的刷卡记录。">
-          <Card title="刷卡记录" bordered={false}>
-            {getFieldDecorator('record', {
-              initialValue: creditCards,
-            })(
-              <TableForm
-                onChange={this.onAddCard}
-                onLoadBanks={this.onLoadBanks}
-                banks={banks}
-                creditCards={creditCards}
-              />,
-            )}
+        <PageHeaderWrapper content="随时随地查看商户信息。">
+          <Card title="商户" bordered={false}>
+            {getFieldDecorator('business', {
+              initialValue: list,
+            })(<TableForm onChange={this.onAddBusiness} />)}
           </Card>
         </PageHeaderWrapper>
       </div>

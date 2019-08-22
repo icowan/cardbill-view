@@ -117,7 +117,7 @@ const Model: ModelType = {
         return;
       }
       // todo load list
-      this.list(payload, { call, put });
+      window.location.reload();
     },
   },
 

@@ -1,20 +1,5 @@
 import request from '@/utils/request';
 
-export async function getRecordList() {
-  return request(`/record`);
-}
-
-export async function getBankList() {
-  return request(`/bank`);
-}
-
-export async function getCreditCards(params?: any) {
-  return request(`/creditcard`, {
-    method: 'GET',
-    params: params,
-  });
-}
-
 export async function getBusinessList(params?: any) {
   return request(`/business`, {
     method: 'GET',
@@ -34,11 +19,10 @@ interface TableFormDateType {
   editable: boolean;
   isNew: boolean;
 }
-export async function addCreditCard(params: TableFormDateType[]) {
-  params[0].bank_id = parseInt(params[0].bank_id);
-  params[0].state = parseInt(params[0].state);
+export async function addBusiness(params: TableFormDateType[]) {
+  params[0].code = parseInt(params[0].code);
   let body = JSON.stringify(params[0]);
-  return request(`/creditcard`, {
+  return request(`/business`, {
     method: 'POST',
     body: body,
   });

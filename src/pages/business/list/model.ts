@@ -1,11 +1,11 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { getBankList, getCreditCards, addCreditCard } from './service';
+import { getBusinessList, addBusiness } from './service';
 import { message } from 'antd';
 
 export interface StateType {
-  banks?: [];
-  creditCards?: [];
+  list?: [];
+  business?: [];
 }
 
 export type Effect = (
@@ -17,9 +17,8 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
-    banks: Effect;
-    creditCards: Effect;
-    addCreditCard: Effect;
+    list: Effect;
+    addBusiness: Effect;
   };
   reducers: {
     saveList: Reducer<StateType>;
@@ -27,16 +26,16 @@ export interface ModelType {
 }
 
 const Model: ModelType = {
-  namespace: 'record',
+  namespace: 'business',
 
   state: {
-    banks: [],
-    creditCards: [],
+    list: [],
+    business: [],
   },
 
   effects: {
-    *banks({ payload }, { call, put }) {
-      const response = yield call(getBankList, payload);
+    *list({ payload }, { call, put }) {
+      const response = yield call(getBusinessList, payload);
       if (!response) {
         return;
       }
@@ -47,28 +46,12 @@ const Model: ModelType = {
       yield put({
         type: 'saveList',
         payload: {
-          banks: response.data,
+          list: response.data,
         },
       });
     },
-    *creditCards({ payload }, { call, put }) {
-      const response = yield call(getCreditCards, payload);
-      if (!response) {
-        return;
-      }
-      if (!response.success) {
-        message.error(response.error);
-        return;
-      }
-      yield put({
-        type: 'saveList',
-        payload: {
-          creditCards: response.data,
-        },
-      });
-    },
-    *addCreditCard({ payload }, { call, put }) {
-      const response = yield call(addCreditCard, payload);
+    *addBusiness({ payload }, { call, put }) {
+      const response = yield call(addBusiness, payload);
       if (!response) {
         return;
       }

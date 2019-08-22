@@ -4,6 +4,7 @@ import React, { Fragment, PureComponent } from 'react';
 import isEqual from 'lodash.isequal';
 import styles from '../style.less';
 import moment from 'moment';
+import { routerRedux } from 'dva/router';
 const { Option } = Select;
 
 interface TableFormDateType {
@@ -122,13 +123,6 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
     this.setState({ data: newData });
   };
 
-  // handleKeyPress(e: React.KeyboardEvent, key: string) {
-  //   console.log(e, key)
-  //   if (e.key === 'Enter') {
-  //     this.saveRow(e, key);
-  //   }
-  // }
-
   handleFieldChange(e: React.ChangeEvent<HTMLInputElement>, fieldName: string, key: number) {
     const { data = [] } = this.state;
     const newData = [...data];
@@ -173,32 +167,6 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
     }, 500);
   }
 
-  // cancel(e: React.MouseEvent, key: string) {
-  //   this.clickedCancel = true;
-  //   e.preventDefault();
-  //   const { data = [] } = this.state;
-  //   const newData = [...data];
-  //   // 编辑前的原始数据
-  //   let cacheOriginData = [];
-  //   cacheOriginData = newData.map(item => {
-  //     if (item.id === key) {
-  //       if (this.cacheOriginData[key]) {
-  //         const originItem = {
-  //           ...item,
-  //           ...this.cacheOriginData[key],
-  //           editable: false,
-  //         };
-  //         delete this.cacheOriginData[key];
-  //         return originItem;
-  //       }
-  //     }
-  //     return item;
-  //   });
-
-  //   this.setState({ data: cacheOriginData });
-  //   this.clickedCancel = false;
-  // }
-
   onChangeBank = (val?: number) => {
     this.props.onLoadCreditCards(val);
   };
@@ -211,6 +179,10 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
       target[key] = val;
       this.setState({ data: newData });
     }
+  };
+
+  onToCreditCard = () => {
+    this.props.dispatch(routerRedux.push('/credit-card'));
   };
 
   render() {
@@ -260,9 +232,9 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
                   <div>
                     {menu}
                     <Divider style={{ margin: '4px 0' }} />
-                    <div style={{ padding: '8px', cursor: 'pointer' }}>
+                    {/* <div style={{ padding: '8px', cursor: 'pointer' }}>
                       <Icon type="plus" /> 添加银行
-                    </div>
+                    </div> */}
                   </div>
                 )}
               >
@@ -288,10 +260,10 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
                 dropdownRender={menu => (
                   <div>
                     {menu}
-                    <Divider style={{ margin: '4px 0' }} />
+                    {/* <Divider style={{ margin: '4px 0' }} />
                     <div style={{ padding: '8px', cursor: 'pointer' }}>
                       <Icon type="plus" /> 添加信用卡
-                    </div>
+                    </div> */}
                   </div>
                 )}
               >
@@ -317,10 +289,10 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
                 dropdownRender={menu => (
                   <div>
                     {menu}
-                    <Divider style={{ margin: '4px 0' }} />
-                    <div style={{ padding: '8px', cursor: 'pointer' }}>
+                    {/* <Divider style={{ margin: '4px 0' }} />
+                    <a href="/#/business"><div style={{ padding: '8px', cursor: 'pointer' }}>
                       <Icon type="plus" /> 添加商户类型
-                    </div>
+                    </div></a> */}
                   </div>
                 )}
               >
@@ -363,16 +335,18 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
                 dropdownRender={menu => (
                   <div>
                     {menu}
-                    <Divider style={{ margin: '4px 0' }} />
+                    {/* <Divider style={{ margin: '4px 0' }} />
                     <div style={{ padding: '8px', cursor: 'pointer' }}>
                       <Icon type="plus" /> 添加费率
-                    </div>
+                    </div> */}
                   </div>
                 )}
               >
-                <Option key={55}>0.55%</Option>
+                <Option key={38}>0.38%</Option>
                 <Option key={53}>0.53%</Option>
+                <Option key={55}>0.55%</Option>
                 <Option key={58}>0.58%</Option>
+                <Option key={60}>0.6%</Option>
               </Select>
             );
           }

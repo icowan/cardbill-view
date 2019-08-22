@@ -76,7 +76,7 @@ export default {
     defaultGitUrl: 'https://github.com/ant-design/pro-blocks',
   },
   hash: true,
-  history: "hash",
+  history: 'hash',
   // outputPath: "/Users/dudulu/go/src/github.com/nsini/cardbill/dist",
   targets: {
     ie: 11,
@@ -113,14 +113,14 @@ export default {
           path: '/credit-card',
           name: 'credit-card',
           icon: 'credit-card',
-          component: './Welcome',
+          component: './creditcard/list',
           authority: ['admin'],
         },
         {
           path: '/business',
           name: 'business',
           icon: 'ordered-list',
-          component: './Welcome',
+          component: './business/list',
           authority: ['admin'],
         },
         {
