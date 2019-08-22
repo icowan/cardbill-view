@@ -1,4 +1,4 @@
-import { Button, Divider, Input, InputNumber, Icon, Table, message, Select } from 'antd';
+import { Button, Divider, Input, InputNumber, Icon, Table, message, Select, Pagination } from 'antd';
 import React, { Fragment, PureComponent } from 'react';
 
 import isEqual from 'lodash.isequal';
@@ -28,6 +28,7 @@ interface TableFormProps {
   value?: TableFormDateType[];
   banks?: BankType[];
   creditCards?: TableFormDateType[];
+  pagination?: Pagination;
   onLoadBanks?: () => void;
   loadList?: () => void;
   onLoadCreditCards?: (bankId?: number) => void;
@@ -161,7 +162,7 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
   };
 
   render() {
-    const { loading, data } = this.state;
+    const { loading, data, pagination } = this.state;
     const { banks } = this.props;
     let bankOptions = [];
     for (let i in banks) {
@@ -346,7 +347,7 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
           loading={loading}
           columns={columns}
           dataSource={data ? data : []}
-          pagination={false}
+          pagination={pagination}
           // rowClassName={record => (record.editable ? styles.editable : '')}
         />
       </Fragment>

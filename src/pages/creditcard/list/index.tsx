@@ -30,6 +30,7 @@ interface ListProps extends FormComponentProps {
 class List extends Component<ListProps> {
   state = {
     width: '100%',
+    pagination: {},
   };
 
   componentDidMount() {
@@ -93,6 +94,7 @@ class List extends Component<ListProps> {
                 onLoadBanks={this.onLoadBanks}
                 banks={banks}
                 creditCards={creditCards}
+                pagination={this.state.pagination}
               />,
             )}
           </Card>
