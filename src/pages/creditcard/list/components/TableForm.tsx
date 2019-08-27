@@ -16,6 +16,8 @@ interface TableFormDateType {
   bank: BankType;
   editable: boolean;
   isNew: boolean;
+  billing_amount: number;
+  next_billing_amount: number;
 }
 
 interface BankType {
@@ -289,6 +291,30 @@ class TableForm extends PureComponent<TableFormProps, TableFormState> {
             );
           }
           return '每月 ' + text + ' 日';
+        },
+      },
+      {
+        title: '上期账单',
+        dataIndex: 'billing_amount',
+        key: 'billing_amount',
+        render: (text: number, record: any) => {
+          return '¥' + text;
+        },
+      },
+      {
+        title: '下期账单',
+        dataIndex: 'next_billing_amount',
+        key: 'next_billing_amount',
+        render: (text: number, record: any) => {
+          return '¥' + text;
+        },
+      },
+      {
+        title: '余额',
+        dataIndex: 'billing_amount',
+        key: 'balance',
+        render: (text: number, record: any) => {
+          return '¥' + (record.max_amount - text);
         },
       },
       {
