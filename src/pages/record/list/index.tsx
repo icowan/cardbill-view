@@ -24,7 +24,6 @@ import moment from 'moment';
 import { CreditcardStateType } from '@/models/creditcard';
 import { BusinessStateType } from '@/models/business';
 
-// import UpdateForm from "@/pages/list/table/list/components/UpdateForm";
 
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<Action<'record/fetch' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;

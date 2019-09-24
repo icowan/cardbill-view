@@ -127,7 +127,7 @@ export default {
           path: '/merchant',
           name: 'merchant',
           icon: 'smile',
-          component: './Welcome',
+          component: './merchant/list',
           authority: ['admin'],
         },
         {
