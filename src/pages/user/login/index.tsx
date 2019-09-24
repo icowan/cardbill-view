@@ -10,6 +10,7 @@ import { connect } from 'dva';
 import { StateType } from './model';
 import LoginComponents from './components/Login';
 import styles from './style.less';
+
 const { Tab } = LoginComponents;
 import { setAuthority } from '../../../utils/authority';
 
@@ -18,10 +19,12 @@ interface LoginProps {
   userLogin: StateType;
   submitting: boolean;
 }
+
 interface LoginState {
   type: string;
   autoLogin: boolean;
 }
+
 export interface FormDataType {
   userName: string;
   password: string;
@@ -60,16 +63,12 @@ class Login extends Component<LoginProps, LoginState> {
     let username = this.getParameterByName('username');
     if (token != '') {
       localStorage.setItem('username', username);
-      //localStorage.setItem('user_id', user_id)
       localStorage.setItem('authorization', token.replace('Bearer+', 'Bearer '));
-      // Cookie.set("username", username);
-      // Cookie.set("user_id", user_id);
-      // Cookie.set("authorization", token.replace("Bearer+", "Bearer "));
       setAuthority('admin');
-      // this.props.dispatch(routerRedux.push('/record'))
       window.location.href = '/#/record';
     }
   }
+
   getParameterByName = (name: string) => {
     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),

@@ -2,39 +2,36 @@ import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
 import { getBankList, getCreditCards, addCreditCard } from './service';
 import { message } from 'antd';
-import { TableListData } from '@/pages/creditcard/list/data';
 
-export interface CreditCardStateType {
+export interface StateType {
   banks?: [];
-  data?: TableListData;
+  creditCards?: [];
 }
 
 export type Effect = (
   action: AnyAction,
-  effects: EffectsCommandMap & { select: <T>(func: (state: CreditCardStateType) => T) => T },
+  effects: EffectsCommandMap & { select: <T>(func: (state: StateType) => T) => T },
 ) => void;
 
 export interface ModelType {
   namespace: string;
-  state: CreditCardStateType;
+  state: StateType;
   effects: {
     banks: Effect;
-    fetch: Effect;
-    add: Effect;
+    creditCards: Effect;
+    addCreditCard: Effect;
   };
   reducers: {
-    save: Reducer<CreditCardStateType>;
+    saveList: Reducer<StateType>;
   };
 }
 
 const Model: ModelType = {
-  namespace: 'creditcard',
+  namespace: 'record',
 
   state: {
     banks: [],
-    data: {
-      list: [],
-    },
+    creditCards: [],
   },
 
   effects: {
@@ -48,14 +45,13 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'save',
+        type: 'saveList',
         payload: {
           banks: response.data,
         },
       });
     },
-
-    *fetch({ payload }, { call, put }) {
+    *creditCards({ payload }, { call, put }) {
       const response = yield call(getCreditCards, payload);
       if (!response) {
         return;
@@ -65,15 +61,13 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'save',
+        type: 'saveList',
         payload: {
-          data: {
-            list: response.data,
-          },
+          creditCards: response.data,
         },
       });
     },
-    *add({ payload }, { call, put }) {
+    *addCreditCard({ payload }, { call, put }) {
       const response = yield call(addCreditCard, payload);
       if (!response) {
         return;
@@ -82,14 +76,16 @@ const Model: ModelType = {
         message.error(response.error);
         return;
       }
+      // todo load list
+      window.location.reload();
     },
   },
 
   reducers: {
-    save(state, action) {
+    saveList(state, { payload }) {
       return {
         ...state,
-        ...action.payload,
+        ...payload,
       };
     },
   },

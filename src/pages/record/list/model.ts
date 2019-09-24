@@ -1,15 +1,16 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-// import { routerRedux } from 'dva/router';
-import { getRecordList, getBankList, getCreditCards, getBusinessList, addRecord } from './service';
-//import { getPageQuery, setAuthority } from './utils/utils';
+import { getRecordList, getBankList, getBusinessList, addRecord } from './service';
+import { getCreditCards } from '@/pages/creditcard/list/service';
 import { message } from 'antd';
+import { CreditCardType, TableListData } from '@/pages/record/list/data';
+import { CreditCardType, BankType } from '@/types/creditcard';
 
 export interface StateType {
-  list?: [];
-  banks?: [];
-  creditCards?: [];
+  banks?: BankType[];
+  creditCards?: CreditCardType[];
   businesses?: [];
+  records: TableListData;
 }
 
 export type Effect = (
@@ -21,14 +22,13 @@ export interface ModelType {
   namespace: string;
   state: StateType;
   effects: {
-    list: Effect;
-    banks: Effect;
-    creditCards: Effect;
-    businesses: Effect;
-    addRecord: Effect;
+    fetch: Effect;
+    add: Effect;
+    //remove: Effect;
+    //update: Effect;
   };
   reducers: {
-    saveList: Reducer<StateType>;
+    save: Reducer<StateType>;
   };
 }
 
@@ -36,14 +36,21 @@ const Model: ModelType = {
   namespace: 'record',
 
   state: {
-    list: [],
     banks: [],
     creditCards: [],
     businesses: [],
+    records: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        current: 1,
+      },
+    },
   },
 
   effects: {
-    *list({ payload }, { call, put }) {
+    *fetch({ payload }, { call, put }) {
       const response = yield call(getRecordList, payload);
       if (!response) {
         return;
@@ -53,12 +60,26 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'saveList',
+        type: 'save',
         payload: {
-          list: response.data,
+          records: response.data,
         },
       });
     },
+    *add({ payload, callback }, { call, put }) {
+      const response = yield call(addRecord, payload);
+      if (!response) {
+        return;
+      }
+      if (!response.success) {
+        message.error(response.error);
+        return;
+      }
+      message.success('添加成功!');
+      if (callback) callback();
+    },
+
+    // todo 这几个后面挪到自己的模块下
     *banks({ payload }, { call, put }) {
       const response = yield call(getBankList, payload);
       if (!response) {
@@ -69,7 +90,7 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'saveList',
+        type: 'save',
         payload: {
           banks: response.data,
         },
@@ -85,7 +106,7 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'saveList',
+        type: 'save',
         payload: {
           creditCards: response.data,
         },
@@ -101,31 +122,19 @@ const Model: ModelType = {
         return;
       }
       yield put({
-        type: 'saveList',
+        type: 'save',
         payload: {
           businesses: response.data,
         },
       });
     },
-    *addRecord({ payload }, { call, put }) {
-      const response = yield call(addRecord, payload);
-      if (!response) {
-        return;
-      }
-      if (!response.success) {
-        message.error(response.error);
-        return;
-      }
-      // todo load list
-      window.location.reload();
-    },
   },
 
   reducers: {
-    saveList(state, { payload }) {
+    save(state, action) {
       return {
         ...state,
-        ...payload,
+        ...action.payload,
       };
     },
   },

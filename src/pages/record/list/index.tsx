@@ -1,17 +1,31 @@
-import { Alert, Icon, Card, Form } from 'antd';
-// import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
+import { Card, Form, Button } from 'antd';
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Dispatch } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
 import { StateType } from './model';
-// import styles from './style.less';
-import TableForm from './components/TableForm';
+import {
+  BusinessType,
+  CreditCardType,
+  ListItem,
+  TableListPagination,
+  ListState,
+  TableListParams,
+  CreateFormParams,
+} from '@/pages/record/list/data';
+
+import CreateForm from '@/pages/record/list/components/CreateForm';
+import StandardTable, {
+  StandardTableColumnProps,
+} from '@/pages/record/list/components/StandardTable';
+import { SorterResult } from 'antd/es/table';
+import moment from 'moment';
+// import UpdateForm from "@/pages/list/table/list/components/UpdateForm";
 
 interface ListProps extends FormComponentProps {
-  dispatch: Dispatch<any>;
-  submitting: boolean;
+  dispatch: Dispatch<Action<'record/fetch' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;
+  loading: boolean;
   record: StateType;
 }
 
@@ -24,19 +38,91 @@ interface ListProps extends FormComponentProps {
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     record,
-    submitting: loading.effects['record/list'],
+    loading: loading.effects['record/fetch'],
   }),
 )
-class List extends Component<ListProps> {
-  state = {
+class List extends Component<ListProps, ListState> {
+  state: ListState = {
+    modalVisible: false,
+    updateModalVisible: false,
+    formValues: {},
+    stepFormValues: {},
     width: '100%',
   };
+
+  columns: StandardTableColumnProps[] = [
+    {
+      title: '时间',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (text: string) => {
+        return moment(new Date(text)).format('YYYY/MM/DD');
+      },
+    },
+    {
+      title: '银行',
+      dataIndex: 'credit_card',
+      key: 'bank',
+      render: (text: CreditCardType) => {
+        return text.bank.bank_name;
+      },
+    },
+    {
+      title: '信用卡',
+      dataIndex: 'credit_card',
+      key: 'credit_card',
+      render: (text: CreditCardType) => {
+        return text.card_name;
+      },
+    },
+    {
+      title: '商户类型',
+      dataIndex: 'business',
+      key: 'business_type',
+      render: (text: BusinessType) => {
+        return text.code + '-' + text.business_name;
+      },
+    },
+    {
+      title: '商户名称',
+      dataIndex: 'business_name',
+      key: 'business_name',
+    },
+    {
+      title: '费率',
+      dataIndex: 'rate',
+      key: 'rate',
+      render: (text: number) => {
+        return (text * 100).toFixed(2) + '%';
+      },
+    },
+    {
+      title: '金额',
+      dataIndex: 'amount',
+      key: 'amount',
+      render: (text: number) => {
+        return '¥' + text;
+      },
+    },
+    {
+      title: '到账',
+      dataIndex: 'arrival',
+      key: 'arrival',
+      render: (text: number) => {
+        return '¥' + text;
+      },
+    },
+    {
+      title: '操作',
+      key: 'action',
+    },
+  ];
 
   componentDidMount() {
     window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
     const { dispatch } = this.props;
     dispatch({
-      type: 'record/list',
+      type: 'record/fetch',
     });
   }
 
@@ -57,67 +143,115 @@ class List extends Component<ListProps> {
     });
   };
 
-  renderMessage = (content: string) => (
-    <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
-  );
+  handleModalVisible = (flag?: boolean) => {
+    if (flag) {
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'record/creditCards',
+      });
+      dispatch({
+        type: 'record/businesses',
+      });
+    }
 
-  onLoadBanks = () => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'record/banks',
-    });
-    dispatch({
-      type: 'record/businesses',
+    this.setState({
+      modalVisible: !!flag,
     });
   };
 
-  onLoadCreditCards = (bankId: number) => {
+  handleAdd = (fields: CreateFormParams) => {
     const { dispatch } = this.props;
+
     dispatch({
-      type: 'record/creditCards',
-      payload: {
-        bank_id: bankId,
+      type: 'record/add',
+      payload: fields,
+      callback: () => {
+        dispatch({ type: 'record/fetch' });
       },
     });
+
+    this.handleModalVisible();
   };
 
-  onAddRecord = (record: any) => {
+  handleStandardTableChange = (
+    pagination: Partial<TableListPagination>,
+    filtersArg: Record<keyof ListItem, string[]>,
+    sorter: SorterResult<ListItem>,
+  ) => {
     const { dispatch } = this.props;
+    const { formValues } = this.state;
+
+    const filters = Object.keys(filtersArg).reduce((obj, key) => {
+      const newObj = { ...obj };
+      newObj[key] = getValue(filtersArg[key]);
+      return newObj;
+    }, {});
+
+    const params: Partial<TableListParams> = {
+      page: pagination.current,
+      pageSize: pagination.pageSize,
+      ...formValues,
+      ...filters,
+    };
+    if (sorter.field) {
+      params.sorter = `${sorter.field}_${sorter.order}`;
+    }
+
     dispatch({
-      type: 'record/addRecord',
-      payload: record,
+      type: 'record/fetch',
+      payload: params,
     });
   };
+
+  handleSelectRows = (rows: ListItem[]) => {};
 
   render() {
     const {
-      record: { list, banks, creditCards, businesses },
-      form: { getFieldDecorator },
+      record: { records, creditCards, businesses },
+      loading,
     } = this.props;
+
+    const { modalVisible } = this.state;
+
+    const parentMethods = {
+      handleAdd: this.handleAdd,
+      handleModalVisible: this.handleModalVisible,
+      creditCards: creditCards,
+      businesses: businesses,
+    };
+
     return (
       <div>
         <PageHeaderWrapper content="随时随地记录您的刷卡记录。">
-          <Card title="刷卡记录" bordered={false}>
-            {getFieldDecorator('record', {
-              initialValue: list,
-            })(
-              <TableForm
-                onChange={this.onAddRecord}
-                onLoadBanks={this.onLoadBanks}
-                businesses={businesses}
-                banks={banks}
-                creditCards={creditCards}
-                onLoadCreditCards={this.onLoadCreditCards}
-              />,
-            )}
+          <Card
+            title="刷卡记录"
+            bordered={false}
+            extra={
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+                增加记录
+              </Button>
+            }
+          >
+            <StandardTable
+              selectedRows={}
+              loading={loading}
+              data={records}
+              columns={this.columns}
+              onSelectRow={this.handleSelectRows}
+              onChange={this.handleStandardTableChange}
+            />
           </Card>
+
+          <CreateForm {...parentMethods} modalVisible={modalVisible} />
+
+          {/*{stepFormValues && Object.keys(stepFormValues).length ? (*/}
+          {/*  <UpdateForm*/}
+          {/*    {...updateMethods}*/}
+          {/*    updateModalVisible={updateModalVisible}*/}
+          {/*    values={stepFormValues}*/}
+          {/*  />*/}
+          {/*) : null}*/}
         </PageHeaderWrapper>
-        {/* <FooterToolbar style={{ width }}>
-          {this.getErrorInfo()}
-          <Button type="primary" onClick={this.validate} loading={submitting}>
-            提交
-          </Button>
-        </FooterToolbar> */}
       </div>
     );
   }
