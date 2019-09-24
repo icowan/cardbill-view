@@ -143,16 +143,18 @@ class List extends Component<ListProps, ListState> {
     });
   };
 
-  renderMessage = (content: string) => (
-    <Alert style={{ marginBottom: 24 }} message={content} type="error" showIcon />
-  );
-
   handleAdd = (params: CreditCardType) => {
     const { dispatch } = this.props;
+    console.log(params);
     dispatch({
       type: 'creditcard/add',
       payload: params,
+      callback: () => {
+        dispatch({ type: 'creditcard/fetch' });
+      },
     });
+
+    this.handleModalVisible();
   };
 
   handleModalVisible = (flag?: boolean) => {

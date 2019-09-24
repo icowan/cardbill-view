@@ -73,7 +73,8 @@ const Model: ModelType = {
         },
       });
     },
-    *add({ payload }, { call, put }) {
+
+    *add({ payload, callback }, { call, put }) {
       const response = yield call(addCreditCard, payload);
       if (!response) {
         return;
@@ -82,6 +83,7 @@ const Model: ModelType = {
         message.error(response.error);
         return;
       }
+      if (callback) callback();
     },
   },
 
