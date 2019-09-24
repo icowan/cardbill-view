@@ -1,18 +1,21 @@
-import { Alert, Icon, Card, Form } from 'antd';
-// import { FormattedMessage, formatMessage } from 'umi-plugin-react/locale';
+import { Button, Card, Form } from 'antd';
 import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
-import { StateType } from './model';
-// import styles from './style.less';
-import TableForm from './components/TableForm';
+import { BusinessStateType } from '@/models/business';
+import { CreditCardType } from '@/types/creditcard';
+import StandardTable, {
+  StandardTableColumnProps,
+} from '@/pages/business/list/components/StandardTable';
+import { ListState } from '@/pages/business/list/data';
+import CreateForm from '@/pages/business/list/components/CreateForm';
 
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<any>;
   submitting: boolean;
-  business: StateType;
+  business: BusinessStateType;
 }
 
 @connect(
@@ -20,23 +23,41 @@ interface ListProps extends FormComponentProps {
     business,
     loading,
   }: {
-    business: StateType;
+    business: BusinessStateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     business,
-    submitting: loading.effects['business/list'],
+    loading: loading.effects['business/fetch'],
   }),
 )
-class List extends Component<ListProps> {
-  state = {
+class List extends Component<ListProps, ListState> {
+  state: ListState = {
     width: '100%',
+    modalVisible: false,
   };
+
+  columns: StandardTableColumnProps[] = [
+    {
+      title: 'MCC',
+      dataIndex: 'code',
+      key: 'code',
+    },
+    {
+      title: '名称',
+      dataIndex: 'business_name',
+      key: 'business_name',
+    },
+    {
+      title: '操作',
+      key: 'action',
+    },
+  ];
 
   componentDidMount() {
     window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
     const { dispatch } = this.props;
     dispatch({
-      type: 'business/list',
+      type: 'business/fetch',
     });
   }
 
@@ -57,27 +78,53 @@ class List extends Component<ListProps> {
     });
   };
 
-  onAddBusiness = (record: any) => {
+  handleAdd = (params: CreditCardType) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'business/addBusiness',
-      payload: record,
+      type: 'businessList/add',
+      payload: params,
+      callback: () => {
+        dispatch({ type: 'business/fetch' });
+      },
+    });
+
+    this.handleModalVisible();
+  };
+
+  handleModalVisible = (flag?: boolean) => {
+    this.setState({
+      modalVisible: !!flag,
     });
   };
 
   render() {
     const {
-      business: { list },
-      form: { getFieldDecorator },
+      business: { data },
+      loading,
     } = this.props;
+
+    const { modalVisible } = this.state;
+
+    const parentMethods = {
+      handleAdd: this.handleAdd,
+      handleModalVisible: this.handleModalVisible,
+    };
+
     return (
       <div>
         <PageHeaderWrapper content="随时随地查看商户信息。">
-          <Card title="商户" bordered={false}>
-            {getFieldDecorator('business', {
-              initialValue: list,
-            })(<TableForm onChange={this.onAddBusiness} />)}
+          <Card
+            title="商户"
+            bordered={false}
+            extra={
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+                添加商户类型
+              </Button>
+            }
+          >
+            <StandardTable loading={loading} data={{ list: data }} columns={this.columns} />
           </Card>
+          <CreateForm {...parentMethods} modalVisible={modalVisible} />
         </PageHeaderWrapper>
       </div>
     );

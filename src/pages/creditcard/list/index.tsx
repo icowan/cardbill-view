@@ -4,17 +4,17 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Action, Dispatch } from 'redux';
 import { FormComponentProps } from 'antd/es/form';
 import { connect } from 'dva';
-import { CreditCardStateType } from './model';
-import { CreditCardType, ListState, TableListData } from '@/pages/creditcard/list/data';
+import { CreditCardType, ListState } from '@/pages/creditcard/list/data';
 import StandardTable, {
   StandardTableColumnProps,
 } from '@/pages/creditcard/list/components/StandardTable';
 import { BankType } from '@/pages/bank/list/data';
-import { SorterResult } from 'antd/es/table';
 import CreateForm from '@/pages/creditcard/list/components/CreateForm';
+import { BankStateType } from '@/models/bank';
+import { CreditCardStateType } from '@/pages/creditcard/list/model';
 
 interface ListProps extends FormComponentProps {
-  dispatch: Dispatch<Action<'creditcard/fetch' | 'creditcard/add' | 'bank/fetch'>>;
+  dispatch: Dispatch<Action<'creditcard/fetch' | 'creditcardList/add' | 'bank/fetch'>>;
   loading: boolean;
   creditcard: CreditCardStateType;
 }
@@ -22,12 +22,15 @@ interface ListProps extends FormComponentProps {
 @connect(
   ({
     creditcard,
+    bank,
     loading,
   }: {
     creditcard: CreditCardStateType;
+    bank: BankStateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     creditcard,
+    bank,
     loading: loading.effects['creditcard/fetch'],
   }),
 )
@@ -145,9 +148,8 @@ class List extends Component<ListProps, ListState> {
 
   handleAdd = (params: CreditCardType) => {
     const { dispatch } = this.props;
-    console.log(params);
     dispatch({
-      type: 'creditcard/add',
+      type: 'creditcardList/add',
       payload: params,
       callback: () => {
         dispatch({ type: 'creditcard/fetch' });
@@ -161,7 +163,7 @@ class List extends Component<ListProps, ListState> {
     if (flag) {
       const { dispatch } = this.props;
       dispatch({
-        type: 'creditcard/banks',
+        type: 'bank/fetch',
       });
     }
 
@@ -170,50 +172,19 @@ class List extends Component<ListProps, ListState> {
     });
   };
 
-  handleStandardTableChange = (
-    pagination: Partial<TableListData>,
-    filtersArg: Record<keyof CreditCardType, string[]>,
-    sorter: SorterResult<CreditCardType>,
-  ) => {
-    // const {dispatch} = this.props;
-    // const {formValues} = this.state;
-    //
-    // const filters = Object.keys(filtersArg).reduce((obj, key) => {
-    //   const newObj = {...obj};
-    //   newObj[key] = getValue(filtersArg[key]);
-    //   return newObj;
-    // }, {});
-    //
-    // const params: Partial<TableListParams> = {
-    //   page: pagination.current,
-    //   pageSize: pagination.pageSize,
-    //   ...formValues,
-    //   ...filters,
-    // };
-    // if (sorter.field) {
-    //   params.sorter = `${sorter.field}_${sorter.order}`;
-    // }
-    //
-    // dispatch({
-    //   type: 'record/fetch',
-    //   payload: params,
-    // });
-  };
-
   render() {
     const {
-      creditcard: { data, banks },
+      creditcard: { data },
+      bank,
       loading,
     } = this.props;
 
     const { modalVisible } = this.state;
 
-    console.log(this.props);
-
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      banks: banks,
+      banks: bank.data,
     };
 
     return (
@@ -228,12 +199,7 @@ class List extends Component<ListProps, ListState> {
               </Button>
             }
           >
-            <StandardTable
-              loading={loading}
-              data={data}
-              columns={this.columns}
-              onChange={this.handleStandardTableChange}
-            />
+            <StandardTable loading={loading} data={{ list: data }} columns={this.columns} />
           </Card>
 
           <CreateForm {...parentMethods} modalVisible={modalVisible} />

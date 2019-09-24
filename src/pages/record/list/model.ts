@@ -1,7 +1,6 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { getRecordList, getBankList, getBusinessList, addRecord } from './service';
-import { getCreditCards } from '@/pages/creditcard/list/service';
+import { getRecordList, addRecord } from './service';
 import { message } from 'antd';
 import { CreditCardType, TableListData } from '@/pages/record/list/data';
 import { CreditCardType, BankType } from '@/types/creditcard';
@@ -24,8 +23,6 @@ export interface ModelType {
   effects: {
     fetch: Effect;
     add: Effect;
-    //remove: Effect;
-    //update: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -77,56 +74,6 @@ const Model: ModelType = {
       }
       message.success('添加成功!');
       if (callback) callback();
-    },
-
-    // todo 这几个后面挪到自己的模块下
-    *banks({ payload }, { call, put }) {
-      const response = yield call(getBankList, payload);
-      if (!response) {
-        return;
-      }
-      if (!response.success) {
-        message.error(response.error);
-        return;
-      }
-      yield put({
-        type: 'save',
-        payload: {
-          banks: response.data,
-        },
-      });
-    },
-    *creditCards({ payload }, { call, put }) {
-      const response = yield call(getCreditCards, payload);
-      if (!response) {
-        return;
-      }
-      if (!response.success) {
-        message.error(response.error);
-        return;
-      }
-      yield put({
-        type: 'save',
-        payload: {
-          creditCards: response.data,
-        },
-      });
-    },
-    *businesses({ payload }, { call, put }) {
-      const response = yield call(getBusinessList, payload);
-      if (!response) {
-        return;
-      }
-      if (!response.success) {
-        message.error(response.error);
-        return;
-      }
-      yield put({
-        type: 'save',
-        payload: {
-          businesses: response.data,
-        },
-      });
     },
   },
 

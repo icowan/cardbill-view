@@ -21,6 +21,9 @@ import StandardTable, {
 } from '@/pages/record/list/components/StandardTable';
 import { SorterResult } from 'antd/es/table';
 import moment from 'moment';
+import { CreditcardStateType } from '@/models/creditcard';
+import { BusinessStateType } from '@/models/business';
+
 // import UpdateForm from "@/pages/list/table/list/components/UpdateForm";
 
 interface ListProps extends FormComponentProps {
@@ -32,12 +35,18 @@ interface ListProps extends FormComponentProps {
 @connect(
   ({
     record,
+    creditcard,
+    business,
     loading,
   }: {
     record: StateType;
+    creditcard: CreditcardStateType;
+    business: BusinessStateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     record,
+    creditcard,
+    business,
     loading: loading.effects['record/fetch'],
   }),
 )
@@ -147,10 +156,10 @@ class List extends Component<ListProps, ListState> {
     if (flag) {
       const { dispatch } = this.props;
       dispatch({
-        type: 'record/creditCards',
+        type: 'creditcard/fetch',
       });
       dispatch({
-        type: 'record/businesses',
+        type: 'business/fetch',
       });
     }
 
@@ -207,7 +216,9 @@ class List extends Component<ListProps, ListState> {
 
   render() {
     const {
-      record: { records, creditCards, businesses },
+      record: { records, businesses },
+      creditcard: { data },
+      business,
       loading,
     } = this.props;
 
@@ -216,8 +227,8 @@ class List extends Component<ListProps, ListState> {
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
-      creditCards: creditCards,
-      businesses: businesses,
+      creditCards: data,
+      businesses: business.data,
     };
 
     return (

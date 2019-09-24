@@ -7,17 +7,6 @@ export async function getRecordList(params: TableListParams) {
   });
 }
 
-export async function getBankList() {
-  return request(`/bank`);
-}
-
-export async function getBusinessList(params?: any) {
-  return request(`/business`, {
-    method: 'GET',
-    params: params,
-  });
-}
-
 export async function addRecord(params: CreateFormParams) {
   params.amount = parseFloat(params.amount);
   params.rate = parseFloat(params.rate);

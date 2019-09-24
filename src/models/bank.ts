@@ -1,43 +1,38 @@
 import { AnyAction, Reducer } from 'redux';
 import { EffectsCommandMap } from 'dva';
-import { addCreditCard } from './service';
+import { getBanks } from '@/services/bank';
 import { message } from 'antd';
-import { TableListData } from '@/pages/creditcard/list/data';
+import { BankType } from '@/types/bank';
 
-export interface CreditCardStateType {
-  banks?: [];
-  data?: TableListData;
+export interface BankStateType {
+  banks?: BankType[];
 }
 
 export type Effect = (
   action: AnyAction,
-  effects: EffectsCommandMap & { select: <T>(func: (state: CreditCardStateType) => T) => T },
+  effects: EffectsCommandMap & { select: <T>(func: (state: BankStateType) => T) => T },
 ) => void;
 
 export interface ModelType {
   namespace: string;
-  state: CreditCardStateType;
+  state: BankStateType;
   effects: {
-    add: Effect;
+    fetch: Effect;
   };
   reducers: {
-    save: Reducer<CreditCardStateType>;
+    save: Reducer<BankStateType>;
   };
 }
 
 const Model: ModelType = {
-  namespace: 'creditcardList',
-
+  namespace: 'bank',
   state: {
-    banks: [],
-    data: {
-      list: [],
-    },
+    data: [],
   },
 
   effects: {
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addCreditCard, payload);
+    *fetch({ payload }, { call, put }) {
+      const response = yield call(getBanks, payload);
       if (!response) {
         return;
       }
@@ -45,7 +40,12 @@ const Model: ModelType = {
         message.error(response.error);
         return;
       }
-      if (callback) callback();
+      yield put({
+        type: 'save',
+        payload: {
+          data: response.data,
+        },
+      });
     },
   },
 
