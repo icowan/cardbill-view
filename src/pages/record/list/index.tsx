@@ -1,4 +1,4 @@
-import {Card, Form, Button} from 'antd';
+import {Card, Form, Button, Row, Icon, Tag} from 'antd';
 import React, {Component} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {Action, Dispatch} from 'redux';
@@ -24,13 +24,30 @@ import moment from 'moment';
 import {CreditcardStateType} from '@/models/creditcard';
 import {BusinessStateType} from '@/models/business';
 import Statistics from "@/pages/record/list/components/Statistics";
-
+import UserLanding from "@/pages/record/list/components/UserLanding";
 
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<Action<'record/fetch' | 'record/fetchStatistics' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;
   loading: boolean;
   record: StateType;
 }
+
+const BankColor = {
+  "1": "magenta",
+  "2": "red",
+  "3": "volcano",
+  "4": "orange",
+  "5": "gold",
+  "6": "lime",
+  "7": "green",
+  "8": "cyan",
+  "9": "blue",
+  "10": "geekblue",
+  "11": "purple",
+  "12": "#f50",
+  "13": "#2db7f5",
+  "14": "#108ee9",
+};
 
 @connect(
   ({
@@ -73,7 +90,7 @@ class List extends Component<ListProps, ListState> {
       dataIndex: 'credit_card',
       key: 'bank',
       render: (text: CreditCardType) => {
-        return text.bank.bank_name;
+        return <Tag color={BankColor[text.bank.id]}>{text.bank.bank_name}</Tag>;
       },
     },
     {
@@ -239,7 +256,15 @@ class List extends Component<ListProps, ListState> {
 
     return (
       <div>
-        <PageHeaderWrapper content="随时随地记录您的刷卡记录。">
+        <PageHeaderWrapper content={<UserLanding/>} extra={<div>
+          <Row>
+            <h3 style={{margin: 0, color: '#333'}}>
+              <a target="_black" href="https://docs.nsini.com">
+                <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg"/>{' '}
+                使用文档
+              </a></h3>
+          </Row>
+        </div>}>
           <Statistics data={statistics}/>
           <Card
             title="刷卡记录"

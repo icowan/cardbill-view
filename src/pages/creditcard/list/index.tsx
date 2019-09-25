@@ -1,17 +1,17 @@
-import { Alert, Button, Card, Form, Input, InputNumber, Select } from 'antd';
-import React, { Component } from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Action, Dispatch } from 'redux';
-import { FormComponentProps } from 'antd/es/form';
-import { connect } from 'dva';
-import { CreditCardType, ListState } from '@/pages/creditcard/list/data';
+import {Alert, Button, Card, Form, Input, InputNumber, Select, Tag} from 'antd';
+import React, {Component} from 'react';
+import {PageHeaderWrapper} from '@ant-design/pro-layout';
+import {Action, Dispatch} from 'redux';
+import {FormComponentProps} from 'antd/es/form';
+import {connect} from 'dva';
+import {CreditCardType, ListState} from '@/pages/creditcard/list/data';
 import StandardTable, {
   StandardTableColumnProps,
 } from '@/pages/creditcard/list/components/StandardTable';
-import { BankType } from '@/pages/bank/list/data';
+import {BankType} from '@/pages/bank/list/data';
 import CreateForm from '@/pages/creditcard/list/components/CreateForm';
-import { BankStateType } from '@/models/bank';
-import { CreditCardStateType } from '@/pages/creditcard/list/model';
+import {BankStateType} from '@/models/bank';
+import {CreditCardStateType} from '@/pages/creditcard/list/model';
 
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<Action<'creditcard/fetch' | 'creditcardList/add' | 'bank/fetch'>>;
@@ -19,12 +19,29 @@ interface ListProps extends FormComponentProps {
   creditcard: CreditCardStateType;
 }
 
+const BankColor = {
+  "1": "magenta",
+  "2": "red",
+  "3": "volcano",
+  "4": "orange",
+  "5": "gold",
+  "6": "lime",
+  "7": "green",
+  "8": "cyan",
+  "9": "blue",
+  "10": "geekblue",
+  "11": "purple",
+  "12": "#f50",
+  "13": "#2db7f5",
+  "14": "#108ee9",
+};
+
 @connect(
   ({
-    creditcard,
-    bank,
-    loading,
-  }: {
+     creditcard,
+     bank,
+     loading,
+   }: {
     creditcard: CreditCardStateType;
     bank: BankStateType;
     loading: { effects: { [key: string]: boolean } };
@@ -47,7 +64,7 @@ class List extends Component<ListProps, ListState> {
       dataIndex: 'bank',
       key: 'bank',
       render: (text: BankType) => {
-        return text.bank_name;
+        return <Tag color={BankColor[text.id]}>{text.bank_name}</Tag>
       },
     },
     {
@@ -122,8 +139,8 @@ class List extends Component<ListProps, ListState> {
   ];
 
   componentDidMount() {
-    window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
-    const { dispatch } = this.props;
+    window.addEventListener('resize', this.resizeFooterToolbar, {passive: true});
+    const {dispatch} = this.props;
     dispatch({
       type: 'creditcard/fetch',
     });
@@ -138,21 +155,21 @@ class List extends Component<ListProps, ListState> {
       const sider = document.querySelectorAll('.ant-layout-sider')[0] as HTMLDivElement;
       if (sider) {
         const width = `calc(100% - ${sider.style.width})`;
-        const { width: stateWidth } = this.state;
+        const {width: stateWidth} = this.state;
         if (stateWidth !== width) {
-          this.setState({ width });
+          this.setState({width});
         }
       }
     });
   };
 
   handleAdd = (params: CreditCardType) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
     dispatch({
       type: 'creditcardList/add',
       payload: params,
       callback: () => {
-        dispatch({ type: 'creditcard/fetch' });
+        dispatch({type: 'creditcard/fetch'});
       },
     });
 
@@ -161,7 +178,7 @@ class List extends Component<ListProps, ListState> {
 
   handleModalVisible = (flag?: boolean) => {
     if (flag) {
-      const { dispatch } = this.props;
+      const {dispatch} = this.props;
       dispatch({
         type: 'bank/fetch',
       });
@@ -174,12 +191,12 @@ class List extends Component<ListProps, ListState> {
 
   render() {
     const {
-      creditcard: { data },
+      creditcard: {data},
       bank,
       loading,
     } = this.props;
 
-    const { modalVisible } = this.state;
+    const {modalVisible} = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -199,10 +216,10 @@ class List extends Component<ListProps, ListState> {
               </Button>
             }
           >
-            <StandardTable loading={loading} data={{ list: data }} columns={this.columns} />
+            <StandardTable loading={loading} data={{list: data}} columns={this.columns}/>
           </Card>
 
-          <CreateForm {...parentMethods} modalVisible={modalVisible} />
+          <CreateForm {...parentMethods} modalVisible={modalVisible}/>
         </PageHeaderWrapper>
       </div>
     );

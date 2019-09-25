@@ -48,14 +48,14 @@ class Statistics extends Component<StatisticsProps> {
         <Col span={6}>
           <div className={styles.itemBody2}>
             <div className={styles.itemTitle}>
-              <p className={styles.titleText}>总消费金额</p>
+              <p className={styles.titleText}>总刷金额</p>
               <span className={styles.tag}>实时</span>
             </div>
             <div>
               <h2 className={styles.itemNum}>¥ {replaceNum(total_consumption)}</h2>
               <div>
                 <p className={styles.total}>¥ {replaceNum(monthly_consumption)}</p>
-                <p className={styles.desc}>当月消费</p>
+                <p className={styles.desc}>当月刷</p>
               </div>
             </div>
           </div>
