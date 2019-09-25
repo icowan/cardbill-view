@@ -1,15 +1,16 @@
-import { AnyAction, Reducer } from 'redux';
-import { EffectsCommandMap } from 'dva';
-import { getRecordList, addRecord } from './service';
-import { message } from 'antd';
-import { CreditCardType, TableListData } from '@/pages/record/list/data';
-import { CreditCardType, BankType } from '@/types/creditcard';
+import {AnyAction, Reducer} from 'redux';
+import {EffectsCommandMap} from 'dva';
+import {getRecordList, addRecord, getStatistics} from './service';
+import {message} from 'antd';
+import {CreditCardType, StatisticsType, TableListData} from '@/pages/record/list/data';
+import {CreditCardType, BankType} from '@/types/creditcard';
 
 export interface StateType {
   banks?: BankType[];
   creditCards?: CreditCardType[];
   businesses?: [];
   records: TableListData;
+  statistics: StatisticsType;
 }
 
 export type Effect = (
@@ -23,6 +24,7 @@ export interface ModelType {
   effects: {
     fetch: Effect;
     add: Effect;
+    fetchStatistics: Effect;
   };
   reducers: {
     save: Reducer<StateType>;
@@ -44,10 +46,27 @@ const Model: ModelType = {
         current: 1,
       },
     },
+    statistics: {},
   },
 
   effects: {
-    *fetch({ payload }, { call, put }) {
+    * fetchStatistics({payload}, {call, put}) {
+      const response = yield call(getStatistics, payload);
+      if (!response) {
+        return;
+      }
+      if (!response.success) {
+        message.error(response.error);
+        return;
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          statistics: response.data,
+        },
+      });
+    },
+    * fetch({payload}, {call, put}) {
       const response = yield call(getRecordList, payload);
       if (!response) {
         return;
@@ -63,7 +82,7 @@ const Model: ModelType = {
         },
       });
     },
-    *add({ payload, callback }, { call, put }) {
+    * add({payload, callback}, {call, put}) {
       const response = yield call(addRecord, payload);
       if (!response) {
         return;

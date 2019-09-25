@@ -1,5 +1,5 @@
-import { BusinessType } from '@/types/business';
-import { CreditCardType } from '@/types/creditcard';
+import {BusinessType} from '@/types/business';
+import {CreditCardType} from '@/types/creditcard';
 
 interface ListState {
   width: string;
@@ -49,4 +49,15 @@ export interface CreateFormParams {
   business_type: number;
   card_id: number;
   rate: number;
+}
+
+export interface StatisticsType {
+  credit_amount: number; // 总额度
+  credit_number: number; // 信用卡数量
+  total_consumption: number; // 总消费额度
+  monthly_consumption: number; // 当月消费额度
+  interest_expense: number; // 利息支出
+  current_interest: number; // 当月利息出支
+  unpaid_bill: number; // 未还账单
+  repaid_bill: number; // 已还账单
 }

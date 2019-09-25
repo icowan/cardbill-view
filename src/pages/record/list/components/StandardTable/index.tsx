@@ -1,8 +1,8 @@
-import { Alert, Table } from 'antd';
-import { ColumnProps, TableRowSelection, TableProps } from 'antd/es/table';
-import React, { Component, Fragment } from 'react';
+import {Table} from 'antd';
+import {ColumnProps, TableProps} from 'antd/es/table';
+import React, {Component} from 'react';
 
-import { TableListItem } from '../../data.d';
+import {TableListItem} from '../../data.d';
 import styles from './index.less';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
@@ -27,7 +27,7 @@ function initTotalList(columns: StandardTableColumnProps[]) {
   const totalList: StandardTableColumnProps[] = [];
   columns.forEach(column => {
     if (column.needTotal) {
-      totalList.push({ ...column, total: 0 });
+      totalList.push({...column, total: 0});
     }
   });
   return totalList;
@@ -48,7 +48,7 @@ class StandardTable extends Component<StandardTableProps<TableListItem>> {
 
   constructor(props: StandardTableProps<TableListItem>) {
     super(props);
-    const { columns } = props;
+    const {columns} = props;
     const needTotalList = initTotalList(columns);
 
     this.state = {
@@ -63,22 +63,22 @@ class StandardTable extends Component<StandardTableProps<TableListItem>> {
     sorter,
     ...rest
   ) => {
-    const { onChange } = this.props;
+    const {onChange} = this.props;
     if (onChange) {
       onChange(pagination, filters, sorter, ...rest);
     }
   };
 
   render() {
-    const { data, rowKey, ...rest } = this.props;
-    const { list = [], pagination = false } = data || {};
+    const {data, rowKey, ...rest} = this.props;
+    const {list = [], pagination = false} = data || {};
 
     const paginationProps = pagination
       ? {
-          showSizeChanger: true,
-          showQuickJumper: true,
-          ...pagination,
-        }
+        showSizeChanger: true,
+        showQuickJumper: true,
+        ...pagination,
+      }
       : false;
 
     return (

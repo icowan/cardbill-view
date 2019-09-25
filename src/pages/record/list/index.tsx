@@ -1,10 +1,10 @@
-import { Card, Form, Button } from 'antd';
-import React, { Component } from 'react';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { Action, Dispatch } from 'redux';
-import { FormComponentProps } from 'antd/es/form';
-import { connect } from 'dva';
-import { StateType } from './model';
+import {Card, Form, Button} from 'antd';
+import React, {Component} from 'react';
+import {PageHeaderWrapper} from '@ant-design/pro-layout';
+import {Action, Dispatch} from 'redux';
+import {FormComponentProps} from 'antd/es/form';
+import {connect} from 'dva';
+import {StateType} from './model';
 import {
   BusinessType,
   CreditCardType,
@@ -19,25 +19,26 @@ import CreateForm from '@/pages/record/list/components/CreateForm';
 import StandardTable, {
   StandardTableColumnProps,
 } from '@/pages/record/list/components/StandardTable';
-import { SorterResult } from 'antd/es/table';
+import {SorterResult} from 'antd/es/table';
 import moment from 'moment';
-import { CreditcardStateType } from '@/models/creditcard';
-import { BusinessStateType } from '@/models/business';
+import {CreditcardStateType} from '@/models/creditcard';
+import {BusinessStateType} from '@/models/business';
+import Statistics from "@/pages/record/list/components/Statistics";
 
 
 interface ListProps extends FormComponentProps {
-  dispatch: Dispatch<Action<'record/fetch' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;
+  dispatch: Dispatch<Action<'record/fetch' | 'record/fetchStatistics' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;
   loading: boolean;
   record: StateType;
 }
 
 @connect(
   ({
-    record,
-    creditcard,
-    business,
-    loading,
-  }: {
+     record,
+     creditcard,
+     business,
+     loading,
+   }: {
     record: StateType;
     creditcard: CreditcardStateType;
     business: BusinessStateType;
@@ -47,7 +48,7 @@ interface ListProps extends FormComponentProps {
     creditcard,
     business,
     loading: loading.effects['record/fetch'],
-  }),
+  })
 )
 class List extends Component<ListProps, ListState> {
   state: ListState = {
@@ -127,10 +128,14 @@ class List extends Component<ListProps, ListState> {
   ];
 
   componentDidMount() {
-    window.addEventListener('resize', this.resizeFooterToolbar, { passive: true });
-    const { dispatch } = this.props;
+    window.addEventListener('resize', this.resizeFooterToolbar, {passive: true});
+    const {dispatch} = this.props;
     dispatch({
       type: 'record/fetch',
+    });
+
+    dispatch({
+      type: 'record/fetchStatistics',
     });
   }
 
@@ -143,9 +148,9 @@ class List extends Component<ListProps, ListState> {
       const sider = document.querySelectorAll('.ant-layout-sider')[0] as HTMLDivElement;
       if (sider) {
         const width = `calc(100% - ${sider.style.width})`;
-        const { width: stateWidth } = this.state;
+        const {width: stateWidth} = this.state;
         if (stateWidth !== width) {
-          this.setState({ width });
+          this.setState({width});
         }
       }
     });
@@ -153,7 +158,7 @@ class List extends Component<ListProps, ListState> {
 
   handleModalVisible = (flag?: boolean) => {
     if (flag) {
-      const { dispatch } = this.props;
+      const {dispatch} = this.props;
       dispatch({
         type: 'creditcard/fetch',
       });
@@ -168,13 +173,14 @@ class List extends Component<ListProps, ListState> {
   };
 
   handleAdd = (fields: CreateFormParams) => {
-    const { dispatch } = this.props;
+    const {dispatch} = this.props;
 
     dispatch({
       type: 'record/add',
       payload: fields,
       callback: () => {
-        dispatch({ type: 'record/fetch' });
+        dispatch({type: 'record/fetch'});
+        dispatch({type: 'record/fetchStatistics'});
       },
     });
 
@@ -186,11 +192,11 @@ class List extends Component<ListProps, ListState> {
     filtersArg: Record<keyof ListItem, string[]>,
     sorter: SorterResult<ListItem>,
   ) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
+    const {dispatch} = this.props;
+    const {formValues} = this.state;
 
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
+      const newObj = {...obj};
       newObj[key] = getValue(filtersArg[key]);
       return newObj;
     }, {});
@@ -211,17 +217,18 @@ class List extends Component<ListProps, ListState> {
     });
   };
 
-  handleSelectRows = (rows: ListItem[]) => {};
+  handleSelectRows = (rows: ListItem[]) => {
+  };
 
   render() {
     const {
-      record: { records, businesses },
-      creditcard: { data },
+      record: {records, statistics},
+      creditcard: {data},
       business,
       loading,
     } = this.props;
 
-    const { modalVisible } = this.state;
+    const {modalVisible} = this.state;
 
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -233,6 +240,7 @@ class List extends Component<ListProps, ListState> {
     return (
       <div>
         <PageHeaderWrapper content="随时随地记录您的刷卡记录。">
+          <Statistics data={statistics}/>
           <Card
             title="刷卡记录"
             bordered={false}
@@ -252,7 +260,7 @@ class List extends Component<ListProps, ListState> {
             />
           </Card>
 
-          <CreateForm {...parentMethods} modalVisible={modalVisible} />
+          <CreateForm {...parentMethods} modalVisible={modalVisible}/>
 
           {/*{stepFormValues && Object.keys(stepFormValues).length ? (*/}
           {/*  <UpdateForm*/}

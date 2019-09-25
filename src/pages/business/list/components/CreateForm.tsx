@@ -39,7 +39,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         })(
           <InputNumber
             style={{ width: 120 }}
-            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '')}
             parser={value => value.replace(/\$\s?|(,*)/g, '')}
             placeholder="MCC"
             min={1000}
