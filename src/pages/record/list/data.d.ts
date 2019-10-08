@@ -49,6 +49,7 @@ export interface CreateFormParams {
   business_type: number;
   card_id: number;
   rate: number;
+  swipe_time: string;
 }
 
 export interface StatisticsType {

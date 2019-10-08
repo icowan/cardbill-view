@@ -1,8 +1,9 @@
-import { Form, Input, Modal, Select, Icon, Divider, InputNumber } from 'antd';
+import { Form, Input, Modal, Select, Icon, Divider, InputNumber, DatePicker } from 'antd';
 
 import { FormComponentProps } from 'antd/es/form';
 import React from 'react';
 import { BusinessType, CreateFormParams, CreditCardType } from '@/pages/record/list/data';
+import moment from 'moment';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -148,6 +149,12 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {form.getFieldDecorator('business', {
           rules: [{ message: '请输入商户名称！' }],
         })(<Input placeholder="请输入商户名称" />)}
+      </FormItem>
+
+      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="时间">
+        {form.getFieldDecorator('swipe_time', {
+          initialValue: moment(),
+        })(<DatePicker showTime placeholder="选择时间" />)}
       </FormItem>
     </Modal>
   );
