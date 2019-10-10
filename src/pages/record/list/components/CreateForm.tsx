@@ -1,9 +1,10 @@
-import { Form, Input, Modal, Select, Icon, Divider, InputNumber, DatePicker } from 'antd';
+import {Form, Input, Modal, Select, Icon, Divider, InputNumber, DatePicker} from 'antd';
 
-import { FormComponentProps } from 'antd/es/form';
+import {FormComponentProps} from 'antd/es/form';
 import React from 'react';
-import { BusinessType, CreateFormParams, CreditCardType } from '@/pages/record/list/data';
+import {BusinessType, CreateFormParams, CreditCardType} from '@/pages/record/list/data';
 import moment from 'moment';
+import {Link} from "react-router-dom";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -17,7 +18,7 @@ interface CreateFormProps extends FormComponentProps {
 }
 
 const CreateForm: React.FC<CreateFormProps> = props => {
-  const { modalVisible, form, handleAdd, handleModalVisible, creditCards, businesses } = props;
+  const {modalVisible, form, handleAdd, handleModalVisible, creditCards, businesses} = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -52,20 +53,22 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="信用卡">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="信用卡">
         {form.getFieldDecorator('card_id', {
-          rules: [{ required: true, message: '请选择一张信用卡！' }],
+          rules: [{required: true, message: '请选择一张信用卡！'}],
         })(
           <Select
-            style={{ width: '100%' }}
+            style={{width: '100%'}}
             placeholder="请选择信用卡"
             dropdownRender={menu => (
               <div>
                 {menu}
-                <Divider style={{ margin: '4px 0' }} />
-                <div style={{ padding: '8px', cursor: 'pointer' }}>
-                  <Icon type="plus" /> 添加信用卡
-                </div>
+                <Divider style={{margin: '4px 0'}}/>
+                <Link to={"credit-card"}>
+                  <div style={{padding: '8px', cursor: 'pointer'}}>
+                    <Icon type="plus"/> 添加信用卡
+                  </div>
+                </Link>
               </div>
             )}
           >
@@ -74,14 +77,14 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         )}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="消费金额">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="消费金额">
         {form.getFieldDecorator('amount', {
           rules: [
-            { required: true, type: 'number', message: '请输入消费金额！', min: 0.01, max: 999999 },
+            {required: true, type: 'number', message: '请输入消费金额！', min: 0.01, max: 999999},
           ],
         })(
           <InputNumber
-            style={{ width: 120 }}
+            style={{width: 120}}
             formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             parser={value => value.replace(/\$\s?|(,*)/g, '')}
             placeholder="金额"
@@ -94,36 +97,41 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         )}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="商户类型">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="商户类型">
         {form.getFieldDecorator('business_type', {
-          rules: [{ required: true, message: '请选择商户类型！' }],
+          rules: [{required: true, message: '请选择商户类型！'}],
         })(
           <Select
-            style={{ width: '100%' }}
+            showSearch
+            style={{width: '100%'}}
             placeholder="请选择商户类型"
             dropdownRender={menu => (
               <div>
                 {menu}
-                <Divider style={{ margin: '4px 0' }} />
-                <a href="/#/business">
-                  <div style={{ padding: '8px', cursor: 'pointer' }}>
-                    <Icon type="plus" /> 添加商户类型
+                <Divider style={{margin: '4px 0'}}/>
+                <Link to={"business"}>
+                  <div style={{padding: '8px', cursor: 'pointer'}}>
+                    <Icon type="plus"/> 添加商户类型
                   </div>
-                </a>
+                </Link>
               </div>
             )}
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children[0].toString().indexOf(input.toString()) != -1
+            }
           >
             {businessList}
           </Select>,
         )}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="费率">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="费率">
         {form.getFieldDecorator('rate', {
-          rules: [{ required: true, message: '请选择费率！' }],
+          rules: [{required: true, message: '请选择费率！'}],
         })(
           <Select
-            style={{ width: '100%' }}
+            style={{width: '100%'}}
             placeholder="请选择费率"
             //onChange={val => onChange('rate', val)}
             dropdownRender={menu => (
@@ -145,16 +153,16 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         )}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="商户名">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="商户名">
         {form.getFieldDecorator('business', {
-          rules: [{ message: '请输入商户名称！' }],
-        })(<Input placeholder="请输入商户名称" />)}
+          rules: [{message: '请输入商户名称！'}],
+        })(<Input placeholder="请输入商户名称"/>)}
       </FormItem>
 
-      <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="时间">
+      <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="时间">
         {form.getFieldDecorator('swipe_time', {
           initialValue: moment(),
-        })(<DatePicker showTime placeholder="选择时间" />)}
+        })(<DatePicker showTime placeholder="选择时间"/>)}
       </FormItem>
     </Modal>
   );
