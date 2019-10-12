@@ -99,7 +99,7 @@ export default {
           path: '/',
           name: 'dashboard',
           icon: 'pie-chart',
-          component: './Welcome',
+          component: './dashboard',
           authority: ['admin'],
         },
         {
