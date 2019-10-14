@@ -1,20 +1,12 @@
 import React, {Component} from "react";
 
 import {
-  G2,
   Chart,
   Geom,
   Axis,
   Tooltip,
-  Coord,
-  Label,
-  Legend,
-  View,
-  Guide,
-  Shape,
-  Facet,
-  Util
 } from "bizcharts";
+import {Card} from "antd";
 
 interface LastAmountProps {
   data: LastAmountType[];
@@ -24,7 +16,6 @@ interface LastAmountProps {
 class LastAmount extends Component<LastAmountProps> {
   render() {
     const {data} = this.props;
-    console.log(data)
     const cols = {
       date: {
         alias: "日期"
@@ -34,7 +25,7 @@ class LastAmount extends Component<LastAmountProps> {
       }
     };
     return (
-      <div>
+      <Card title={"近30天消费情况"} style={{marginBottom: 20}}>
         <Chart height={400} data={data} scale={cols} forceFit>
           <Axis
             name="date"
@@ -54,7 +45,7 @@ class LastAmount extends Component<LastAmountProps> {
           <Tooltip/>
           <Geom
             type="line"
-            position="month*amount"
+            position="date*amount"
             size={1}
             color="l (270) 0:rgba(255, 146, 255, 1) .5:rgba(100, 268, 255, 1) 1:rgba(215, 0, 255, 1)"
             shape="smooth"
@@ -65,7 +56,7 @@ class LastAmount extends Component<LastAmountProps> {
             }}
           />
         </Chart>
-      </div>
+      </Card>
     );
   }
 }

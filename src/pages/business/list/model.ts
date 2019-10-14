@@ -40,7 +40,7 @@ const Model: ModelType = {
         message.error(response.error);
         return;
       }
-      message.success('清加成功');
+      message.success('添加成功');
       if (callback) callback();
     },
   },

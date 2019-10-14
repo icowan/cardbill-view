@@ -3,6 +3,8 @@ import React, {Component} from "react";
 import {FormComponentProps} from "antd/es/form";
 import {Action, Dispatch} from "redux";
 import LastAmount from "@/pages/dashboard/components/LastAmount";
+import MonthAmount from "@/pages/dashboard/components/MonthAmount";
+import {Col, Row} from "antd";
 
 interface DashboardProps extends FormComponentProps {
   dispatch: Dispatch<Action<'dashboard/fetchLastAmount'>>;
@@ -18,7 +20,7 @@ interface DashboardState {
 @connect(
   ({
      loading,
-    dashboard
+     dashboard
    }: {
     dashboard: dashboard,
     loading: {
@@ -42,6 +44,10 @@ class Dashboard extends Component<DashboardProps, DashboardState> {
     dispatch({
       type: 'dashboard/fetchLastAmount',
     });
+
+    dispatch({
+      type: 'dashboard/fetchMonthAmount',
+    });
   }
 
   componentWillUnmount() {
@@ -64,11 +70,16 @@ class Dashboard extends Component<DashboardProps, DashboardState> {
 
   render() {
     const {dashboard} = this.props;
-    const {lastAmount} = dashboard;
+    const {lastAmount, monthAmount} = dashboard;
     return (
-      <div>
-        <LastAmount data={lastAmount}/>
-      </div>
+      <Row gutter={16} type="flex" justify="space-around" align="middle">
+        <Col span={24}>
+          <LastAmount data={lastAmount}/>
+        </Col>
+        <Col span={24}>
+          <MonthAmount data={monthAmount}/>
+        </Col>
+      </Row>
     );
   }
 }
