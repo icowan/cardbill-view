@@ -17,8 +17,12 @@ class MonthAmount extends Component<MonthAmountProps> {
   render() {
     const {data} = this.props;
     const cols = {
+      date: {
+        alias: "月份"
+      },
       amount: {
-        tickInterval: 20000
+        tickInterval: 20000,
+        alias: "金额"
       }
     };
 
