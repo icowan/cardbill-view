@@ -88,7 +88,7 @@ export default {
       path: '/',
       component: '../layouts/BasicLayout',
       Routes: ['src/pages/Authorized'],
-      authority: ['admin', 'user'],
+      authority: ['admin', "user"],
       routes: [
         {
           // name: 'login',
@@ -117,19 +117,29 @@ export default {
           authority: ['admin'],
         },
         {
+          path: '/credit-card/:id/bill',
+          component: './creditcard/bill',
+          authority: ['admin'],
+        },
+        {
+          path: '/credit-card/:id/record',
+          component: './creditcard/record',
+          authority: ['admin'],
+        },
+        {
           path: '/business',
           name: 'business',
           icon: 'ordered-list',
           component: './business/list',
           authority: ['admin'],
         },
-        {
-          path: '/merchant',
-          name: 'merchant',
-          icon: 'smile',
-          component: './merchant/list',
-          authority: ['admin'],
-        },
+        // {
+        //   path: '/merchant',
+        //   name: 'merchant',
+        //   icon: 'smile',
+        //   component: './merchant/list',
+        //   authority: ['admin'],
+        // },
         {
           component: './404',
         },
@@ -159,7 +169,7 @@ export default {
         resourcePath: string;
       },
       _: string,
-      localName: string,
+      localName: string
     ) => {
       if (
         context.resourcePath.includes('node_modules') ||
