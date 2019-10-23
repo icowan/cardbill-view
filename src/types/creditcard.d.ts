@@ -11,4 +11,6 @@ export interface CreditCardType {
   max_amount: number;
   state: number;
   bank: BankType;
+  tail_number: number;
+  card_number: number;
 }

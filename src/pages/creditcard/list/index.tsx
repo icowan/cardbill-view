@@ -264,18 +264,21 @@ class Index extends Component<ListProps, ListState> {
                     <Card
                       hoverable
                       className={styles.card}
-                      actions={[<Link to={`/credit-card/${item.id}/record`} key="option1">查看消费</Link>, <Link key="option2" to={`/credit-card/${item.id}/bill`}>查看账单</Link>]}
+                      actions={[<Link to={`/credit-card/${item.id}/record`} key="option1">查看消费</Link>,
+                        <Link key="option2" to={`/credit-card/${item.id}/bill`}>查看账单</Link>,
+                        <Link key="option3" to={`/credit-card/${item.id}/edit`}>修改</Link>]}
                     >
                       <Card.Meta
                         avatar={<Avatar className={styles.cardAvatar}
                                         style={{backgroundColor: BankColor[item.bank.id]}}>{item.bank.bank_name.slice(0,1)}</Avatar>}
-                        title={<a>{item.bank.bank_name} - {item.card_name}</a>}
+                        title={<Link to={`/credit-card/${item.id}`}>{item.bank.bank_name} - {item.card_name}</Link>}
                         description={
                           <Paragraph className={styles.item} ellipsis={{rows: 3}}>
-                            <p>固定额度: <b>{item.fixed_amount}</b></p>
-                            <p>临时额度: {item.max_amount}</p>
-                            <p>账单日: 每月 {item.billing_day} 日</p>
-                            <p>还款日: 每月 {item.cardholder} 日</p>
+                            <div>卡号后四位: <Tag color={BankColor[item.bank.id]}>{item.tail_number}</Tag></div>
+                            <div>固定额度: <b>{item.fixed_amount}</b></div>
+                            <div>临时额度: {item.max_amount}</div>
+                            <div>账单日: 每月 {item.billing_day} 日</div>
+                            <div>还款日: 每月 {item.cardholder} 日</div>
                           </Paragraph>
                         }
                       />

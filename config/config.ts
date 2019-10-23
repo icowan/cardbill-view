@@ -88,7 +88,7 @@ export default {
       path: '/',
       component: '../layouts/BasicLayout',
       Routes: ['src/pages/Authorized'],
-      authority: ['admin', "user"],
+      authority: ['admin', 'user'],
       routes: [
         {
           // name: 'login',
@@ -117,13 +117,9 @@ export default {
           authority: ['admin'],
         },
         {
-          path: '/credit-card/:id/bill',
-          component: './creditcard/bill',
-          authority: ['admin'],
-        },
-        {
-          path: '/credit-card/:id/record',
-          component: './creditcard/record',
+          path: '/credit-card/:id',
+          //name: 'credit-card-detail',
+          component: './creditcard/detail',
           authority: ['admin'],
         },
         {
@@ -132,8 +128,7 @@ export default {
           icon: 'ordered-list',
           component: './business/list',
           authority: ['admin'],
-        },
-        // {
+        }, // {
         //   path: '/merchant',
         //   name: 'merchant',
         //   icon: 'smile',

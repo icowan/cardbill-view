@@ -49,6 +49,7 @@ export default {
   'menu.editor.koni': '拓扑编辑器',
   'menu.record': '刷卡记录',
   'menu.credit-card': '信用卡',
+  'menu.credit-card-detail': '信用卡详情',
   'menu.business': '商户类型',
   'menu.merchant': '商户列表',
 };
