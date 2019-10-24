@@ -264,9 +264,7 @@ class Index extends Component<ListProps, ListState> {
                     <Card
                       hoverable
                       className={styles.card}
-                      actions={[<Link to={`/credit-card/${item.id}/record`} key="option1">查看消费</Link>,
-                        <Link key="option2" to={`/credit-card/${item.id}/bill`}>查看账单</Link>,
-                        <Link key="option3" to={`/credit-card/${item.id}/edit`}>修改</Link>]}
+                      actions={[<Link to={`/credit-card/${item.id}`} key="option1">详情</Link>]}
                     >
                       <Card.Meta
                         avatar={<Avatar className={styles.cardAvatar}
