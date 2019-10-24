@@ -214,7 +214,7 @@ class Index extends Component<ListProps, ListState> {
     const content = (
       <div className={styles.pageHeaderContent}>
         <p>
-          随时随地管理您的信用卡
+          这里显示最近一周要还款的卡及日期
         </p>
         <div className={styles.contentLink}>
           <a>

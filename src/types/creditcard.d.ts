@@ -13,4 +13,5 @@ export interface CreditCardType {
   bank: BankType;
   tail_number: number;
   card_number: number;
+  remaining_amount: number;
 }

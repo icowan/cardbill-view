@@ -1,6 +1,6 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {getDetail, getBill} from './service';
+import {getDetail, getBill, repayBill} from './service';
 import {message} from 'antd';
 import {CreditCardType} from "@/types/creditcard";
 
@@ -21,6 +21,7 @@ export interface ModelType {
   effects: {
     fetch: Effect;
     fetchBill: Effect;
+    repay: Effect;
   };
   reducers: {
     save: Reducer<CreditCardStateType>;
@@ -80,6 +81,18 @@ const Model: ModelType = {
         },
       });
     },
+    * repay({payload, callback}, {call, put}) {
+      const response = yield call(repayBill, payload);
+      if (!response) {
+        return;
+      }
+      if (!response.success) {
+        message.error(response.error);
+        return;
+      }
+      message.success("还款成功!");
+      if (callback) callback();
+    }
   },
 
   reducers: {

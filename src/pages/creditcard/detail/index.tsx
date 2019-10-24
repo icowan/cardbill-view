@@ -20,9 +20,12 @@ import {FormComponentProps} from 'antd/es/form';
 import {connect} from 'dva';
 import {CreditCardType} from '@/pages/creditcard/list/data';
 import styles from "./style.less";
-import {DetailState} from "@/pages/creditcard/detail/data";
+import {DetailState, RepaymentState} from "@/pages/creditcard/detail/data";
 import StandardTable from "@/pages/creditcard/detail/bill";
-import {BankType} from "@/pages/bank/list/data";
+import moment from "moment";
+import Repayment from "@/pages/creditcard/detail/components/Repayment";
+import {bool} from "prop-types";
+import {BillType} from "@/types/bill";
 
 const ButtonGroup = Button.Group;
 
@@ -50,7 +53,9 @@ interface ListProps extends FormComponentProps {
 class Index extends Component<ListProps> {
   state: DetailState = {
     width: '100%',
-    tabActiveKey: "bill"
+    tabActiveKey: "bill",
+    modalVisible: false,
+    currBill: null
   };
 
   componentDidMount() {
@@ -89,7 +94,10 @@ class Index extends Component<ListProps> {
     {
       title: '账单时间',
       dataIndex: 'created_at',
-      key: 'created_at'
+      key: 'created_at',
+      render: (text: string) => {
+        return <Tag>{moment(new Date(text)).format('YYYY-MM-DD')}</Tag>;
+      },
     },
     {
       title: '账单金额',
@@ -101,29 +109,81 @@ class Index extends Component<ListProps> {
       dataIndex: 'repayment_day',
       key: 'repayment_day',
       render: (text: string) => {
-        return <Tag>{text}</Tag>;
+        return <Tag>{moment(new Date(text)).format('YYYY-MM-DD')}</Tag>;
       },
     },
     {
-      title: '是否还款',
-      dataIndex: 'fixed_amount',
-      key: 'fixed_amount',
+      title: '还款时间',
+      dataIndex: 'repay_time',
+      key: 'repay_time',
+      render: (text: string) => {
+        if (text == null) {
+          return <Tag color="red">-</Tag>
+        }
+        return <Tag color={"green"}>{moment(new Date(text)).format('YYYY-MM-DD H:m')}</Tag>;
+      },
+    },
+    {
+      title: '还款',
+      dataIndex: 'is_repay',
+      key: 'is_repay',
+      render: (text: boolean) => {
+        if (text) {
+          return <Tag color="green">已还</Tag>
+        }
+        return <Tag color="red">未还</Tag>;
+      },
     },
     {
       title: '操作',
       key: 'action',
+      render: (text, record: BillType) => {
+        if (!record.is_repay) {
+          return <Fragment>
+            <a onClick={() => this.showRepayment(true, record)}>还款</a>
+            <Divider type="vertical"/>
+            <span>分期</span>
+          </Fragment>
+        }
+        return ('')
+      },
     },
   ];
 
+  showRepayment = (visible: boolean, bill: BillType) => {
+    this.setState({
+      modalVisible: visible,
+      currBill: bill
+    });
+  };
+
+  handleRepayment = (fieldsValue: RepaymentState) => {
+    const {dispatch, match: {params}} = this.props;
+    dispatch({
+      type: 'creditcarddetail/repay',
+      payload: fieldsValue,
+      callback: () => {
+        this.showRepayment(false, null);
+        dispatch({
+          type: 'creditcarddetail/fetch',
+          payload: params,
+        });
+
+        dispatch({
+          type: 'creditcarddetail/fetchBill',
+          payload: params,
+        });
+      },
+    });
+  };
+
   render() {
     const {data, bill} = this.props;
-    const {tabActiveKey} = this.state;
+    const {tabActiveKey, modalVisible, currBill} = this.state;
 
     if (!data || !data.user) {
       return ('')
     }
-
-    console.log(bill)
 
     const description = (
       <RouteContext.Consumer>
@@ -131,8 +191,11 @@ class Index extends Component<ListProps> {
           <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
             <Descriptions.Item label="创建人">{data.user.username}</Descriptions.Item>
             <Descriptions.Item label="所属银行">{data.bank.bank_name}</Descriptions.Item>
-            <Descriptions.Item label="创建时间">{data.created_at}</Descriptions.Item>
+            <Descriptions.Item
+              label="创建时间">{moment(new Date(data.created_at)).format('YYYY/MM/DD H:m')}</Descriptions.Item>
             <Descriptions.Item label="卡号末四位">{data.tail_number}</Descriptions.Item>
+            <Descriptions.Item label="固定额度">{data.fixed_amount}</Descriptions.Item>
+            <Descriptions.Item label="临时额度">{data.max_amount}</Descriptions.Item>
             <Descriptions.Item label="账单日">每月 {data.billing_day} 日</Descriptions.Item>
             <Descriptions.Item label="还款日">每月 {data.cardholder} 日</Descriptions.Item>
           </Descriptions>
@@ -142,7 +205,7 @@ class Index extends Component<ListProps> {
 
     const extraContent = (
       <div className={styles.moreInfo}>
-        <Statistic title="剩余额度" value={568.08} prefix="¥"/>
+        <Statistic title="剩余额度" value={data.remaining_amount} prefix="¥"/>
       </div>
     );
 
@@ -159,7 +222,7 @@ class Index extends Component<ListProps> {
     return (
       <div>
         <PageHeaderWrapper
-          title={`卡名: ${data.card_name}`}
+          title={data.card_name}
           extra={action}
           className={styles.pageHeader}
           content={description}
@@ -173,18 +236,20 @@ class Index extends Component<ListProps> {
             },
             {
               key: 'record',
-              tab: '刷卡记录',
+              tab: '刷卡记录(暂不可用)',
             },
           ]}>
 
           <div className={styles.main}>
             <GridContent>
-
-              <Card title="账单列表" style={{ marginBottom: 24 }} bordered={false}>
+              <Card title="账单列表" style={{marginBottom: 24}} bordered={false}>
                 <StandardTable columns={this.columns} data={bill}/>
               </Card>
             </GridContent>
           </div>
+
+          <Repayment modalVisible={modalVisible} handleModalVisible={this.showRepayment}
+                     handleRepayment={this.handleRepayment} bill={currBill} card={data}/>
         </PageHeaderWrapper>
       </div>
     );
