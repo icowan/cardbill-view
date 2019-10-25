@@ -1,10 +1,11 @@
-import {Form, Input, Modal, Select, Icon, Divider, InputNumber, DatePicker} from 'antd';
+import {Form, Input, Modal, Select, Icon, Divider, InputNumber, DatePicker, AutoComplete} from 'antd';
 
 import {FormComponentProps} from 'antd/es/form';
 import React from 'react';
 import {BusinessType, CreateFormParams, CreditCardType} from '@/pages/record/list/data';
 import moment from 'moment';
 import {Link} from "react-router-dom";
+import {MerchantType} from "@/types/merchant";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -15,10 +16,12 @@ interface CreateFormProps extends FormComponentProps {
   handleModalVisible: () => void;
   creditCards: CreditCardType[];
   businesses: BusinessType[];
+  searchBusiness: () => void;
+  businessItems: MerchantType[];
 }
 
 const CreateForm: React.FC<CreateFormProps> = props => {
-  const {modalVisible, form, handleAdd, handleModalVisible, creditCards, businesses} = props;
+  const {modalVisible, form, handleAdd, handleModalVisible, creditCards, businesses, searchBusiness, businessItems} = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -43,6 +46,14 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         {businesses[i].code}-{businesses[i].business_name}
       </Option>,
     );
+  }
+
+  const onChangeBusiness = (val: string, t: any) => {
+    searchBusiness(val);
+  };
+  let dataSource = [];
+  for (let i in businessItems) {
+    dataSource.push(businessItems[i].merchant_name)
   }
 
   return (
@@ -156,7 +167,14 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="商户名">
         {form.getFieldDecorator('business', {
           rules: [{message: '请输入商户名称！'}],
-        })(<Input placeholder="请输入商户名称"/>)}
+        })(
+            <AutoComplete
+              placeholder="请输入商户名称"
+              dataSource={dataSource}
+              style={{width: 260}}
+              onChange={onChangeBusiness}
+            />
+          )}
       </FormItem>
 
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="时间">

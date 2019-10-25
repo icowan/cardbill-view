@@ -25,6 +25,7 @@ import {CreditcardStateType} from '@/models/creditcard';
 import {BusinessStateType} from '@/models/business';
 import Statistics from "@/pages/record/list/components/Statistics";
 import UserLanding from "@/pages/record/list/components/UserLanding";
+import {MerchantStateType} from "@/models/merchant";
 
 interface ListProps extends FormComponentProps {
   dispatch: Dispatch<Action<'record/fetch' | 'record/fetchStatistics' | 'record/add' | 'creditcard/fetch' | 'business/fetch'>>;
@@ -54,16 +55,19 @@ const BankColor = {
      record,
      creditcard,
      business,
+     merchant,
      loading,
    }: {
     record: StateType;
     creditcard: CreditcardStateType;
     business: BusinessStateType;
+    merchant: MerchantStateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     record,
     creditcard,
     business,
+    merchant,
     loading: loading.effects['record/fetch'],
   })
 )
@@ -237,12 +241,26 @@ class List extends Component<ListProps, ListState> {
   handleSelectRows = (rows: ListItem[]) => {
   };
 
+  searchBusiness = (val: string) => {
+    if (val == "") {
+      return
+    }
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'merchant/fetch',
+      payload: {
+        q: val
+      }
+    });
+  };
+
   render() {
     const {
       record: {records, statistics},
       creditcard: {data},
       business,
       loading,
+      merchant
     } = this.props;
 
     const {modalVisible} = this.state;
@@ -252,6 +270,8 @@ class List extends Component<ListProps, ListState> {
       handleModalVisible: this.handleModalVisible,
       creditCards: data,
       businesses: business.data,
+      searchBusiness: this.searchBusiness,
+      businessItems: merchant.data
     };
 
     return (
