@@ -35,7 +35,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
   for (let i in creditCards) {
     creditCardList.push(
       <Option key={`card-${creditCards[i].id}`} value={creditCards[i].id}>
-        {creditCards[i].bank.bank_name}-{creditCards[i].card_name}
+        {creditCards[i].bank.bank_name}-{creditCards[i].card_name}-{creditCards[i].tail_number}
       </Option>,
     );
   }
