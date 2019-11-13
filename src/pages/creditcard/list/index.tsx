@@ -1,4 +1,4 @@
-import {Button, Card, Form, Icon, List, Tag, Typography, Avatar} from 'antd';
+import {Button, Card, Form, Icon, List, Tag, Typography, Avatar, Timeline} from 'antd';
 import React, {Component} from 'react';
 import {PageHeaderWrapper} from '@ant-design/pro-layout';
 import {Action, Dispatch} from 'redux';
@@ -11,11 +11,14 @@ import {BankStateType} from '@/models/bank';
 import {CreditCardStateType} from '@/pages/creditcard/list/model';
 import styles from "./style.less";
 import {Link} from "umi";
+import {BillStateType} from "@/models/bill";
+import {StandardTableProps} from "@/pages/creditcard/list/components/StandardTable";
+import moment from "moment";
 
 const {Paragraph} = Typography;
 
 interface ListProps extends FormComponentProps {
-  dispatch: Dispatch<Action<'creditcard/fetch' | 'creditcardList/add' | 'bank/fetch'>>;
+  dispatch: Dispatch<Action<'creditcard/fetch' | 'creditcardList/add' | 'bank/fetch' | 'bill/fetchRecentRepay'>>;
   loading: boolean;
   creditcard: CreditCardStateType;
 }
@@ -47,14 +50,17 @@ const BankColor = {
   ({
      creditcard,
      bank,
+     bill,
      loading,
    }: {
     creditcard: CreditCardStateType;
     bank: BankStateType;
+    bill: BillStateType;
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     creditcard,
     bank,
+    bill,
     loading: loading.effects['creditcard/fetch'],
   }),
 )
@@ -65,7 +71,7 @@ class Index extends Component<ListProps, ListState> {
     width: '100%',
   };
 
-  columns: StandardTableColumnProps[] = [
+  columns: StandardTableProps[] = [
     {
       title: '银行',
       dataIndex: 'bank',
@@ -151,6 +157,10 @@ class Index extends Component<ListProps, ListState> {
     dispatch({
       type: 'creditcard/fetch',
     });
+
+    dispatch({
+      type: 'bill/fetchRecentRepay',
+    });
   }
 
   componentWillUnmount() {
@@ -201,7 +211,10 @@ class Index extends Component<ListProps, ListState> {
       creditcard: {data},
       bank,
       loading,
+      bill
     } = this.props;
+
+    const billData = bill.data;
 
     const {modalVisible} = this.state;
 
@@ -212,20 +225,18 @@ class Index extends Component<ListProps, ListState> {
     };
 
     const content = (
-      <div className={styles.pageHeaderContent}>
-        <p>
-          这里显示最近一周要还款的卡及日期
-        </p>
-        <div className={styles.contentLink}>
-          <a>
-            <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg"/>{' '}
-            使用简介
-          </a>
-          <a>
-            <img alt="" src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg"/>{' '}
-            使用文档
-          </a>
-        </div>
+      billData && <div className={styles.pageHeaderContent}>
+        <h4>近期账单</h4>
+        <Timeline>
+          {billData.map((item, key) => {
+            return <Timeline.Item key={key} dot={<Icon type="clock-circle-o" style={{fontSize: '16px'}}/>} color="red">
+              <Link
+                to={`/credit-card/${item.credit_card.id}`}>{item.credit_card.bank.bank_name}-{item.credit_card.card_name}</Link> 还款日: <Tag
+              color="orange">{moment(new Date(item.repayment_day)).format('YYYY/MM/DD')}</Tag> 金额: <Tag
+              color="gold">{item.amount}</Tag>
+            </Timeline.Item>
+          })}
+        </Timeline>
       </div>
     );
 
@@ -238,66 +249,64 @@ class Index extends Component<ListProps, ListState> {
     const nullData: Partial<CreditCardType> = {};
 
     return (
-      <div>
-        <PageHeaderWrapper content={content} extra={extraContent}>
-          {/*<Card*/}
-          {/*  title="信用卡列表"*/}
-          {/*  bordered={false}*/}
-          {/*  extra={*/}
-          {/*    <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
-          {/*      增加信用卡*/}
-          {/*    </Button>*/}
-          {/*  }*/}
-          {/*>*/}
-          {/*  <StandardTable loading={loading} data={{ list: data }} columns={this.columns} />*/}
-          {/*</Card>*/}
+      <PageHeaderWrapper content={content} extra={extraContent}>
+        {/*<Card*/}
+        {/*  title="信用卡列表"*/}
+        {/*  bordered={false}*/}
+        {/*  extra={*/}
+        {/*    <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>*/}
+        {/*      增加信用卡*/}
+        {/*    </Button>*/}
+        {/*  }*/}
+        {/*>*/}
+        {/*  <StandardTable loading={loading} data={{ list: data }} columns={this.columns} />*/}
+        {/*</Card>*/}
 
-          <List<Partial<CreditCardType>>
-            rowKey="id"
-            loading={loading}
-            grid={{gutter: 24, lg: 4, md: 2, sm: 1, xs: 1}}
-            dataSource={[nullData, ...data]}
-            renderItem={item => {
-              if (item && item.id) {
-                return (
-                  <List.Item key={item.id}>
-                    <Card
-                      hoverable
-                      className={styles.card}
-                      actions={[<Link to={`/credit-card/${item.id}`} key="option1">详情</Link>]}
-                    >
-                      <Card.Meta
-                        avatar={<Avatar className={styles.cardAvatar}
-                                        style={{backgroundColor: BankColor[item.bank.id]}}>{item.bank.bank_name.slice(0,1)}</Avatar>}
-                        title={<Link to={`/credit-card/${item.id}`}>{item.bank.bank_name} - {item.card_name}</Link>}
-                        description={
-                          <Paragraph className={styles.item} ellipsis={{rows: 3}}>
-                            <div>卡号后四位: <Tag color={BankColor[item.bank.id]}>{item.tail_number}</Tag></div>
-                            <div>固定额度: <b>{item.fixed_amount}</b></div>
-                            <div>临时额度: {item.max_amount}</div>
-                            <div>账单日: 每月 {item.billing_day} 日</div>
-                            <div>还款日: 每月 {item.cardholder} 日</div>
-                          </Paragraph>
-                        }
-                      />
-                    </Card>
-                  </List.Item>
-                );
-              }
-
+        <List<Partial<CreditCardType>>
+          rowKey="id"
+          loading={loading}
+          grid={{gutter: 24, lg: 4, md: 2, sm: 1, xs: 1}}
+          dataSource={[nullData, ...data]}
+          renderItem={item => {
+            if (item && item.id) {
               return (
-                <List.Item>
-                  <Button type="dashed" onClick={() => this.handleModalVisible(true)} className={styles.newButton}>
-                    <Icon type="plus"/> 增加信用卡
-                  </Button>
+                <List.Item key={item.id}>
+                  <Card
+                    hoverable
+                    className={styles.card}
+                    actions={[<Link to={`/credit-card/${item.id}`} key="option1">详情</Link>]}
+                  >
+                    <Card.Meta
+                      avatar={<Avatar className={styles.cardAvatar}
+                                      style={{backgroundColor: BankColor[item.bank.id]}}>{item.bank.bank_name.slice(0, 1)}</Avatar>}
+                      title={<Link to={`/credit-card/${item.id}`}>{item.bank.bank_name} - {item.card_name}</Link>}
+                      description={
+                        <Paragraph className={styles.item} ellipsis={{rows: 3}}>
+                          <div>卡号后四位: <Tag color={BankColor[item.bank.id]}>{item.tail_number}</Tag></div>
+                          <div>固定额度: <b>{item.fixed_amount}</b></div>
+                          <div>临时额度: {item.max_amount}</div>
+                          <div>账单日: 每月 {item.billing_day} 日</div>
+                          <div>还款日: 每月 {item.cardholder} 日</div>
+                        </Paragraph>
+                      }
+                    />
+                  </Card>
                 </List.Item>
               );
-            }}
-          />
+            }
 
-          <CreateForm {...parentMethods} modalVisible={modalVisible}/>
-        </PageHeaderWrapper>
-      </div>
+            return (
+              <List.Item>
+                <Button type="dashed" onClick={() => this.handleModalVisible(true)} className={styles.newButton}>
+                  <Icon type="plus"/> 增加信用卡
+                </Button>
+              </List.Item>
+            );
+          }}
+        />
+
+        <CreateForm {...parentMethods} modalVisible={modalVisible}/>
+      </PageHeaderWrapper>
     );
   }
 }
