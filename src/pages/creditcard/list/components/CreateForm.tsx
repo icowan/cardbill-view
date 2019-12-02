@@ -118,7 +118,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
             placeholder="额度"
             prefix="￥"
             min={1}
-            max={99999}
+            max={999999}
             suffix="RMB"
           />,
         )}
@@ -138,7 +138,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
             placeholder="额度"
             prefix="￥"
             min={1}
-            max={99999}
+            max={999999}
             suffix="RMB"
           />,
         )}
