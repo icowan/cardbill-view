@@ -5,6 +5,13 @@ export async function getDetail(params?: any) {
   return request(`/creditcard/${params.id}`);
 }
 
+export async function updateDetail(params?: any) {
+  return request(`/creditcard/${params.id}`, {
+    method: 'PUT',
+    data: params,
+  });
+}
+
 export async function getBill(params?: any) {
   return request(`/bill/card/${params.id}`);
 }

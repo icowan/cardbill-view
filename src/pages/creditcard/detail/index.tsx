@@ -24,30 +24,34 @@ import {DetailState, RepaymentState} from "@/pages/creditcard/detail/data";
 import StandardTable from "@/pages/creditcard/detail/bill";
 import moment from "moment";
 import Repayment from "@/pages/creditcard/detail/components/Repayment";
-import {bool} from "prop-types";
 import {BillType} from "@/types/bill";
+import CreateForm from "@/pages/creditcard/list/components/CreateForm";
+import {BankStateType} from "@/models/bank";
 
-const ButtonGroup = Button.Group;
 
 interface ListProps extends FormComponentProps {
-  dispatch: Dispatch<Action<'creditcarddetail'>>;
+  dispatch: Dispatch<Action<'creditcarddetail/fetch'>>;
   loading: boolean;
   data: CreditCardType;
   bill?: any;
+  bank: BankStateType;
 }
 
 @connect(
   ({
      creditcarddetail,
+     bank,
      loading,
    }: {
     data: creditcarddetail.data,
     bill: creditcarddetail.bill,
+    banks: bank.data,
     loading: { effects: { [key: string]: boolean } };
   }) => ({
     data: creditcarddetail.data,
     bill: creditcarddetail.bill,
-    loading: loading.effects['creditcarddetail/fetch' | 'creditcarddetail/fetchBill'],
+    banks: bank.data,
+    loading: loading.effects['creditcarddetail/fetch' | 'creditcarddetail/fetchBill' | 'creditcarddetail/update'],
   }),
 )
 class Index extends Component<ListProps> {
@@ -55,6 +59,7 @@ class Index extends Component<ListProps> {
     width: '100%',
     tabActiveKey: "bill",
     modalVisible: false,
+    editVisible: false,
     currBill: null
   };
 
@@ -177,9 +182,40 @@ class Index extends Component<ListProps> {
     });
   };
 
+  handleUpdate = (params: CreditCardType) => {
+    const {dispatch, match, data} = this.props;
+    params.id = data.id;
+
+    dispatch({
+      type: 'creditcarddetail/update',
+      payload: params,
+      callback: () => {
+        dispatch({
+          type: 'creditcarddetail/fetch',
+          payload: match.params,
+        });
+      },
+    });
+
+    this.handleModalVisible();
+  };
+
+  handleModalVisible = (flag?: boolean) => {
+    if (flag) {
+      const {dispatch} = this.props;
+      dispatch({
+        type: 'bank/fetch',
+      });
+    }
+
+    this.setState({
+      editVisible: !!flag,
+    });
+  };
+
   render() {
-    const {data, bill} = this.props;
-    const {tabActiveKey, modalVisible, currBill} = this.state;
+    const {data, bill, banks} = this.props;
+    const {tabActiveKey, modalVisible, currBill, editVisible} = this.state;
 
     if (!data || !data.user) {
       return ('')
@@ -212,12 +248,18 @@ class Index extends Component<ListProps> {
     const action = (
       <RouteContext.Consumer>
         {({isMobile}) => (<Fragment>
-          <Button type="primary">编辑</Button>
+          <Button type="primary" onClick={(e) => this.handleModalVisible(true)}>编辑</Button>
         </Fragment>)}
 
       </RouteContext.Consumer>
     );
 
+    const parentMethods = {
+      handleAdd: this.handleUpdate,
+      handleModalVisible: this.handleModalVisible,
+      banks: banks,
+      creditCard: data,
+    };
 
     return (
       <div>
@@ -251,6 +293,8 @@ class Index extends Component<ListProps> {
           <Repayment modalVisible={modalVisible} handleModalVisible={this.showRepayment}
                      handleRepayment={this.handleRepayment} bill={currBill} card={data}/>
         </PageHeaderWrapper>
+
+        <CreateForm {...parentMethods} modalVisible={editVisible}/>
       </div>
     );
   }

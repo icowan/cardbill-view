@@ -1,6 +1,6 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {getDetail, getBill, repayBill} from './service';
+import {getDetail, getBill, repayBill, updateDetail} from './service';
 import {message} from 'antd';
 import {CreditCardType} from "@/types/creditcard";
 
@@ -45,6 +45,19 @@ const Model: ModelType = {
   },
 
   effects: {
+    * update({payload, callback}, {call, put}) {
+      const response = yield call(updateDetail, payload);
+      console.log(payload)
+      console.log(response)
+      if (!response) {
+        return;
+      }
+      if (!response.success) {
+        message.error(response.error);
+        return;
+      }
+      if (callback) callback();
+    },
     * fetch({payload, callback}, {call, put}) {
       const response = yield call(getDetail, payload);
       if (!response) {

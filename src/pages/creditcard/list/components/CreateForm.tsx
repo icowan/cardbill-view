@@ -13,10 +13,11 @@ interface CreateFormProps extends FormComponentProps {
   handleAdd: (fieldsValue: CreditCardType) => void;
   handleModalVisible: () => void;
   banks: BankType[];
+  creditCard: CreditCardType;
 }
 
 const CreateForm: React.FC<CreateFormProps> = props => {
-  const {modalVisible, form, handleAdd, handleModalVisible, banks} = props;
+  const {modalVisible, form, handleAdd, handleModalVisible, banks, creditCard} = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -55,6 +56,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="信用卡" style={{marginBottom: 0}}>
         <FormItem style={{display: 'inline-block', width: 'calc(50% - 12px)'}}>
           {form.getFieldDecorator('bank_id', {
+            initialValue: creditCard && creditCard.bank_id,
             rules: [{required: true, message: '请选择一家银行！'}],
           })(
             <Select
@@ -77,6 +79,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         <span style={{display: 'inline-block', width: '24px', textAlign: 'center'}}>-</span>
         <FormItem style={{display: 'inline-block', width: 'calc(50% - 12px)'}}>
           {form.getFieldDecorator('card_name', {
+            initialValue: creditCard && creditCard.card_name,
             rules: [{required: true, message: '请输入信用卡名!', max: 255}],
           })(<Input placeholder="请输入信用卡名!"/>)}
         </FormItem>
@@ -85,6 +88,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="卡末四位">
         {form.getFieldDecorator('tail_number', {
+          initialValue: creditCard && creditCard.tail_number,
           rules: [
             {type: 'number', min: 1, max: 9999},
           ],
@@ -102,6 +106,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="固定额度">
         {form.getFieldDecorator('fixed_amount', {
+          initialValue: creditCard && creditCard.fixed_amount,
           rules: [
             {required: true, type: 'number', message: '请输入固定额度！', min: 1, max: 999999},
           ],
@@ -121,6 +126,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
 
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="临时额度">
         {form.getFieldDecorator('max_amount', {
+          initialValue: creditCard && creditCard.max_amount,
           rules: [
             {required: true, type: 'number', message: '请输入临时额度！', min: 1, max: 999999},
           ],
@@ -141,6 +147,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
       <FormItem labelCol={{span: 5}} wrapperCol={{span: 15}} label="账单还款日" style={{marginBottom: 0}}>
         <FormItem style={{display: 'inline-block', width: 'calc(50% - 12px)'}}>
           {form.getFieldDecorator('billing_day', {
+            initialValue: creditCard && creditCard.billing_day,
             rules: [{required: true, type: 'number', message: '请选择账单日！', min: 1, max: 31}],
           })(
             <Select style={{width: '100%'}} placeholder="请选择账单日">
@@ -151,6 +158,7 @@ const CreateForm: React.FC<CreateFormProps> = props => {
         <span style={{display: 'inline-block', width: '24px', textAlign: 'center'}}>-</span>
         <FormItem style={{display: 'inline-block', width: 'calc(50% - 12px)'}}>
           {form.getFieldDecorator('cardholder', {
+            initialValue: creditCard && creditCard.cardholder,
             rules: [{required: true, type: 'number', message: '请选择还款日！', min: 1, max: 31}],
           })(
             <Select style={{width: '100%'}} placeholder="请选择还款日">
