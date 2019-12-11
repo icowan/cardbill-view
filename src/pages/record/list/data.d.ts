@@ -7,6 +7,8 @@ interface ListState {
   updateModalVisible: boolean;
   formValues: { [key: string]: string };
   stepFormValues: Partial<ListItem>;
+  start: string;
+  end: string;
 }
 
 export interface ListItem {
