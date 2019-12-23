@@ -9,6 +9,8 @@ interface ListState {
   stepFormValues: Partial<ListItem>;
   start: string;
   end: string;
+  bankId: number;
+  cardId: number;
 }
 
 export interface ListItem {
