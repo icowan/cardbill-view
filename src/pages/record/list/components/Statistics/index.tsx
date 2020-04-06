@@ -56,14 +56,14 @@ class Statistics extends Component<StatisticsProps> {
           <Col span={6}>
             <div className={styles.itemBody2}>
               <div className={styles.itemTitle}>
-                <p className={styles.titleText}>总刷金额</p>
+                <p className={styles.titleText}>当月刷卡金额</p>
                 <span className={styles.tag}>实时</span>
               </div>
               <div>
-                <h2 className={styles.itemNum}>¥ {replaceNum(total_consumption)}</h2>
+                <h2 className={styles.itemNum}>¥ {replaceNum(monthly_consumption)}</h2>
                 <div>
-                  <p className={styles.total}>¥ {replaceNum(monthly_consumption)}</p>
-                  <p className={styles.desc}>当月刷</p>
+                  <p className={styles.total}>¥ {replaceNum(total_consumption)}</p>
+                  <p className={styles.desc}>合计刷</p>
                 </div>
               </div>
             </div>
@@ -71,14 +71,14 @@ class Statistics extends Component<StatisticsProps> {
           <Col span={6}>
             <div className={styles.itemBody3}>
               <div className={styles.itemTitle}>
-                <p className={styles.titleText}>总手续费</p>
+                <p className={styles.titleText}>当月手续费</p>
                 <span className={styles.tag}>实时</span>
               </div>
               <div>
-                <h2 className={styles.itemNum}>¥ {replaceNum(interest_expense)}</h2>
+                <h2 className={styles.itemNum}>¥ {replaceNum(current_interest)}</h2>
                 <div>
-                  <p className={styles.total}>¥ {replaceNum(current_interest)}</p>
-                  <p className={styles.desc}>当月手续费</p>
+                  <p className={styles.total}>¥ {replaceNum(interest_expense)}</p>
+                  <p className={styles.desc}>总手续费</p>
                 </div>
               </div>
             </div>
@@ -89,13 +89,10 @@ class Statistics extends Component<StatisticsProps> {
                 <p className={styles.titleText}>账单</p>
                 <span className={styles.tag}>实时</span>
               </div>
-              <div className={styles.itemRow}>
+              <div >
+              <h2 className={styles.itemNum}>¥ {replaceNum(unpaid_bill)}</h2>
                 <div>
-                  <h2 className={styles.itemNum}>¥ {replaceNum(unpaid_bill)}</h2>
-                  <p className={styles.desc}>未还</p>
-                </div>
-                <div>
-                  <h2 className={styles.itemNum}>¥ {replaceNum(repaid_bill)}</h2>
+                  <p className={styles.total}>¥ {replaceNum(repaid_bill)}</p>
                   <p className={styles.desc}>全部已还</p>
                 </div>
               </div>
