@@ -271,6 +271,7 @@ class List extends Component<ListProps, ListState> {
 
   downloadExport = () => {
     // 可以根据需求传特定的一些参数
+    console.log("aasdfasdfasdfasdfasd");
     const { start, end, bankId, cardId } = this.state;
     const downloadUrl = window.location.hostname == 'localhost' ? 'http://localhost:8080' : '';
     fetch(downloadUrl + '/record/export?start=' + start + '&end=' + end, {
@@ -363,7 +364,7 @@ class List extends Component<ListProps, ListState> {
             }
           >
             <div style={{ marginBottom: 10, marginTop: -10 }}>
-              <Select
+              {/* <Select
                 showSearch
                 style={{ width: 150, marginRight: 10 }}
                 placeholder="请选择银行"
@@ -372,9 +373,9 @@ class List extends Component<ListProps, ListState> {
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
-              ></Select>
+              ></Select> */}
 
-              <Select
+              {/* <Select
                 showSearch
                 style={{ width: 150, marginRight: 10 }}
                 placeholder="请选择信用卡"
@@ -383,26 +384,26 @@ class List extends Component<ListProps, ListState> {
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
-              ></Select>
+              ></Select> */}
 
-              <RangePicker style={{ marginRight: 10 }} onChange={this.onChangeDate} />
+              {/* <RangePicker style={{ marginRight: 10 }} onChange={this.onChangeDate} /> */}
 
-              <Button
+              {/* <Button
                 style={{ marginRight: 20 }}
                 icon="export"
                 type="primary"
-                onClick={() => this.handleStandardTableChange}
+                onClick={() => this.handleStandardTableChange({current:1}, "id", {})}
               >
                 查询
-              </Button>
+              </Button> */}
 
               <Button
                 style={{ marginRight: 20 }}
                 icon="export"
                 type="primary"
-                onClick={() => this.downloadExport}
+                onClick={this.downloadExport}
               >
-                导出
+                导出Excel
               </Button>
               <a id="down_a"></a>
             </div>
