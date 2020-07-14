@@ -1,6 +1,6 @@
 import {AnyAction, Reducer} from 'redux';
 import {EffectsCommandMap} from 'dva';
-import {getDetail, getBill, repayBill, updateDetail} from './service';
+import {getDetail, getBill, getRecord, repayBill, updateDetail} from './service';
 import {message} from 'antd';
 import {CreditCardType} from "@/types/creditcard";
 
@@ -21,6 +21,7 @@ export interface ModelType {
   effects: {
     fetch: Effect;
     fetchBill: Effect;
+    fetchRecord: Effect;
     repay: Effect;
   };
   reducers: {
@@ -41,7 +42,14 @@ const Model: ModelType = {
         current: 1,
       },
     },
-    record: [],
+    record: {
+      list: [],
+      pagination: {
+        total: 0,
+        pageSize: 10,
+        current: 1,
+      },
+    },
   },
 
   effects: {
@@ -91,6 +99,24 @@ const Model: ModelType = {
         type: 'save',
         payload: {
           bill: response.data,
+        },
+      });
+    },
+    * fetchRecord({payload, callback}, {call, put}) {
+      const response = yield call(getRecord, payload);
+      if (!response) {
+        return;
+      }
+      if (!response.success) {
+        message.error(response.error);
+        return;
+      }
+      if (callback) callback();
+
+      yield put({
+        type: 'save',
+        payload: {
+          record: response.data,
         },
       });
     },

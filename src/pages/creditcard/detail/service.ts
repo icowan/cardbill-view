@@ -13,7 +13,15 @@ export async function updateDetail(params?: any) {
 }
 
 export async function getBill(params?: any) {
-  return request(`/bill/card/${params.id}`);
+  return request(`/bill/card/${params.id}`, {
+    params
+  });
+}
+
+export async function getRecord(params?: any) {
+  return request(`/creditcard/${params.id}/record`, {
+    params
+  });
 }
 
 export async function repayBill(params?: RepaymentState) {
